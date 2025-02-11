@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  scrapper:
+    build:
+      context: .
+      dockerfile: scrapper/Dockerfile
+    networks:
+      - app-network
+
+  bot:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    depends_on:
+      - scrapper
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
