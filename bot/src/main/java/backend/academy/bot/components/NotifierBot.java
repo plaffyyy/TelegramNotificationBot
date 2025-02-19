@@ -25,8 +25,6 @@ public final class NotifierBot {
             for (Update update : updates) {
                 CommandHandler commandHandler = new CommandHandler(bot, update);
                 Command command = commandHandler.getCommandFromUpdate();
-
-                //TODO: realize if empty line in command was send
                 if (command == null) {
                 } else {
                     command.execute();

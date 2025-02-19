@@ -22,7 +22,7 @@ public class CommandHandler {
         String textMessage = update.message().text();
         long chatId = update.message().chat().id();
 
-        return switch (textMessage) {
+        return switch (textMessage.split(" ")[0]) {
 
             case "/start" -> new StartCommand(chatId, bot);
             case "/help" -> new HelpCommand(chatId, bot);

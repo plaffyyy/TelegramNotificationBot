@@ -9,4 +9,7 @@ public final class FileWithTextResponses {
     //for help command
     public static final String helpWords = "You can use the following commands:";
 
+    //for track command
+    public static final String trackWords = "";
+
 }
