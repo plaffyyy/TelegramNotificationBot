@@ -26,8 +26,7 @@ public final class NotifierBot {
                 try {
                     CommandHandler commandHandler = new CommandHandler(bot, update);
                     Command command = commandHandler.getCommandFromUpdate();
-                    if (command == null) {
-                    } else {
+                    if (command != null) {
                         command.execute();
                     }
                 } catch (Exception e) {

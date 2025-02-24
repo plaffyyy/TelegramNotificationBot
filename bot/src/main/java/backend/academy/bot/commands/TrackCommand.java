@@ -11,6 +11,9 @@ import java.net.URI;
 import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClient;
 
 
 @Slf4j
@@ -23,32 +26,29 @@ public final class TrackCommand extends Command {
     @Override
     public void execute() {
 
-        log.debug(link);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonInputString = objectMapper.writeValueAsString(Map.of(
+        RestClient restClient = RestClient.builder().build();
+
+        Map<String, Object> jsonRequest = Map.of(
             "chatId", chatId,
             "link", link
-        ));
+        );
 
-        URI uri = new URI("http://scrapper:8081/links");
-        HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json; utf-8");
-        connection.setDoOutput(true);
-
-
-        OutputStream os = connection.getOutputStream();
-        byte[] input = jsonInputString.getBytes("utf-8");
-        os.write(input, 0, input.length);
+        ResponseEntity<Void> response = restClient.post()
+            .uri("http://scrapper:8081/links")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(jsonRequest)
+            .retrieve()
+            .toBodilessEntity();
 
 
-        int responseCode = connection.getResponseCode();
+        int responseCode = response.getStatusCode().value();
+
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            log.info("link is successful get");
-            bot.execute(new SendMessage(chatId, "Ссылка успешно добавлена!"));
+//            log.info("link is successful get");
+            bot.execute(new SendMessage(chatId, FileWithTextResponses.successfulTrack));
         } else {
-            bot.execute(new SendMessage(chatId, "Ошибка при добавлении ссылки."));
+            bot.execute(new SendMessage(chatId, FileWithTextResponses.errorTrack));
         }
 
 

@@ -6,12 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @AllArgsConstructor
@@ -23,10 +25,10 @@ public class TrackController {
     private final LinkService linkService;
 
     @ResponseBody
-    @GetMapping
-    public String getName() {
+    @GetMapping("/{chatId}")
+    public Set<String> getLinks(@PathVariable long chatId) {
 
-        return "test line";
+        return linkService.getLinksByChatId(chatId);
 
     }
 

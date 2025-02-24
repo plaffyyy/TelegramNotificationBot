@@ -23,7 +23,7 @@ public class LinkService {
 
         userLink.computeIfAbsent(chatId, k -> new HashSet<>()).add(url);
 
-        log.debug(userLink.toString());
+        log.warn(userLink.toString());
 
 
     }

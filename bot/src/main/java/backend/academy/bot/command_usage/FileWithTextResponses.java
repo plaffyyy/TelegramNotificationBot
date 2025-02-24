@@ -10,8 +10,14 @@ public final class FileWithTextResponses {
     public static final String helpWords = "You can use the following commands:";
 
     //for track command
-    public static final String trackWords = "Write the link, which you want to track";
+    public static final String successfulTrack = "Ссылка успешно добавлена";
+    public static final String errorTrack = "Некорректные параметры запроса";
 
+    //for untrack command
+
+
+    //for list command
+    public static final String listWords = "Вот ссылки с которых ты получаешь уведомления: ";
 
 
 }
