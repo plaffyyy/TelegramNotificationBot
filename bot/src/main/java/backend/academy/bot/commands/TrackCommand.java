@@ -2,13 +2,12 @@ package backend.academy.bot.commands;
 
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.FileWithTextResponses;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import backend.academy.bot.components.NotifierBot;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -18,15 +17,35 @@ import org.springframework.web.client.RestClient;
 
 @Slf4j
 public final class TrackCommand extends Command {
+    private String tags;
+    private String filters;
+
+    private final CompletableFuture<Void> waitForTags = new CompletableFuture<>();
+    private final CompletableFuture<Void> waitForFilters = new CompletableFuture<>();
+
     public TrackCommand(long chatId, TelegramBot bot, String link) {
         super(chatId, bot, link);
     }
 
+
     @SneakyThrows
     @Override
     public void execute() {
+        bot.execute(new SendMessage(chatId, "Введите теги (опционально)"));
+        NotifierBot.waitingForTags.put(chatId, this);
+
+        waitForTags.thenRun(() -> {
+            bot.execute(new SendMessage(chatId, "Настройте фильтры (опционально)"));
+            NotifierBot.waitingForFilters.put(chatId, this);
+
+            waitForFilters.thenRun(this::addLink);
+        });
 
 
+
+    }
+
+    private void addLink() {
         RestClient restClient = RestClient.builder().build();
 
         Map<String, Object> jsonRequest = Map.of(
@@ -41,16 +60,26 @@ public final class TrackCommand extends Command {
             .retrieve()
             .toBodilessEntity();
 
+        //check my tags and filters
+        log.info("Tags: " +  tags);
+        log.info("Filters: " + filters);
 
         int responseCode = response.getStatusCode().value();
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
-//            log.info("link is successful get");
             bot.execute(new SendMessage(chatId, FileWithTextResponses.successfulTrack));
         } else {
             bot.execute(new SendMessage(chatId, FileWithTextResponses.errorTrack));
         }
+    }
 
+    public void setTagsAndNotifyFuture(String tags) {
+        this.tags = tags;
+        waitForTags.complete(null);
+    }
 
+    public void setFiltersAndNotifyFuture(String filters) {
+        this.filters = filters;
+        waitForFilters.complete(null);
     }
 }

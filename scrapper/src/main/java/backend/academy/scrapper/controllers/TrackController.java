@@ -2,6 +2,7 @@ package backend.academy.scrapper.controllers;
 
 
 import backend.academy.scrapper.dao.LinkService;
+import io.swagger.v3.oas.annotations.headers.Header;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/links")
-public class TrackController {
+public final class TrackController {
 
     @Autowired
     private final LinkService linkService;

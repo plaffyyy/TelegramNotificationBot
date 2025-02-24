@@ -15,6 +15,13 @@ public class LinkService {
         userLink = new HashMap<>();
     }
 
+    public void createChatById(long id) {
+        userLink.put(id, new HashSet<>());
+    }
+    public void deleteChatById(long id) {
+        userLink.put(id, new HashSet<>());
+    }
+
     public Set<String> getLinksByChatId(Long chatId) {
         return userLink.getOrDefault(chatId, new HashSet<>());
     }

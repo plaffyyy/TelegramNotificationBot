@@ -8,32 +8,34 @@ import backend.academy.bot.commands.UntrackCommand;
 import backend.academy.bot.exceptions.NotFoundCommandException;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class CommandHandler {
 
     private TelegramBot bot;
-    private Update update;
+    private long chatId;
+    private String textMessage;
 
     public Command getCommandFromUpdate() {
 
-        if (update.message() == null) return null;
-        String textMessage = update.message().text();
-        long chatId = update.message().chat().id();
-
         String[] messageLink = textMessage.split(" ");
 
-        return switch (messageLink[0]) {
+        try {
+            return switch (messageLink[0]) {
 
-            case "/start" -> new StartCommand(chatId, bot);
-            case "/help" -> new HelpCommand(chatId, bot);
-            case "/track" -> new TrackCommand(chatId, bot, messageLink[1]);
-            case "/untrack" -> new UntrackCommand(chatId, bot, messageLink[1]);
-            case "/list" -> new ListCommand(chatId, bot);
-            //TODO make smt for ignore this and warn user about this situation
-            default -> throw new NotFoundCommandException("Bot hasn't this command");
-        };
+                case "/start" -> new StartCommand(chatId, bot);
+                case "/help" -> new HelpCommand(chatId, bot);
+                case "/track" -> new TrackCommand(chatId, bot, messageLink[1]);
+                case "/untrack" -> new UntrackCommand(chatId, bot, messageLink[1]);
+                case "/list" -> new ListCommand(chatId, bot);
+                default -> throw new NotFoundCommandException("Bot hasn't this command");
+            };
+        } catch (NotFoundCommandException e) {
+            bot.execute(new SendMessage(chatId, "Нет такой команды"));
+        }
+        return null;
 
     }
 
