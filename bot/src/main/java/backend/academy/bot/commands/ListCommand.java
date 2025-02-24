@@ -5,8 +5,9 @@ import backend.academy.bot.command_usage.FileWithTextResponses;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
-import java.util.Set;
+import backend.academy.bot.dto.LinkResponse;
 
 @Slf4j
 public final class ListCommand extends Command {
@@ -23,19 +24,23 @@ public final class ListCommand extends Command {
         RestClient restClient = RestClient.builder().build();
 
 
-        log.warn("restClient starts");
-
-        Set response = restClient.get()
-            .uri("http://scrapper:8081/links/{chatId}", chatId)
+        ResponseEntity<LinkResponse> response = restClient.get()
+            .uri("http://scrapper:8081/links")
+            .header("Tg-Chat-Id", String.valueOf(chatId))
             .retrieve()
-            .body(Set.class);
+            .toEntity(LinkResponse.class);
 
         log.warn(response.toString());
+        LinkResponse linkResponse = response.getBody();
+        if (linkResponse == null || linkResponse.links().isEmpty()) {
+            bot.execute(new SendMessage(chatId, "Нет отслеживаемых ссылок."));
+            return;
+        }
 
-        String allLinks = String.join(System.lineSeparator(), response);
+        StringBuilder allLinks = new StringBuilder("Отслеживаемые ссылки:\n");
+        linkResponse.links().forEach(link -> allLinks.append(link.url()).append("\n"));
 
-        log.warn("All links:" + allLinks);
-        bot.execute(new SendMessage(chatId, allLinks));
+        bot.execute(new SendMessage(chatId, allLinks.toString()));
 
 
 

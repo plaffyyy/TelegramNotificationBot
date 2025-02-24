@@ -1,5 +1,6 @@
 package backend.academy.scrapper.dao;
 
+import backend.academy.scrapper.model.Link;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.*;
@@ -9,7 +10,7 @@ import java.util.*;
 @Service
 public class LinkService {
 
-    private Map<Long, Set<String>> userLink;
+    private Map<Long, Set<Link>> userLink;
 
     public LinkService() {
         userLink = new HashMap<>();
@@ -19,17 +20,16 @@ public class LinkService {
         userLink.put(id, new HashSet<>());
     }
     public void deleteChatById(long id) {
-        userLink.put(id, new HashSet<>());
+        userLink.remove(id);
     }
 
-    public Set<String> getLinksByChatId(Long chatId) {
-        return userLink.getOrDefault(chatId, new HashSet<>());
+    public Set<Link> getLinksByChatId(Long chatId) {
+        return userLink.get(chatId);
     }
 
-    public void track(long chatId, String url) {
+    public void track(long chatId, Link link) {
 
-        userLink.computeIfAbsent(chatId, k -> new HashSet<>()).add(url);
-
+        userLink.get(chatId).add(link);
         log.warn(userLink.toString());
 
 
