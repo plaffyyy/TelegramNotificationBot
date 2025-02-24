@@ -12,7 +12,7 @@ public final class StartCommand extends Command {
 
 
     public StartCommand(long chatId, TelegramBot bot) {
-        super(chatId, bot);
+        super(chatId, bot, "");
     }
 
     @Override

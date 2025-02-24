@@ -17,7 +17,8 @@ services:
       context: .
       dockerfile: bot/Dockerfile
     depends_on:
-      - scrapper
+      scrapper:
+        condition: service_started
     networks:
       - app-network
 

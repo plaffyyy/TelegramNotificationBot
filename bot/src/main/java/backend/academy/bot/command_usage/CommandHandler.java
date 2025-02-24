@@ -22,12 +22,14 @@ public class CommandHandler {
         String textMessage = update.message().text();
         long chatId = update.message().chat().id();
 
-        return switch (textMessage.split(" ")[0]) {
+        String[] messageLink = textMessage.split(" ");
+
+        return switch (messageLink[0]) {
 
             case "/start" -> new StartCommand(chatId, bot);
             case "/help" -> new HelpCommand(chatId, bot);
-            case "/track" -> new TrackCommand(chatId, bot);
-            case "/untrack" -> new UntrackCommand(chatId, bot);
+            case "/track" -> new TrackCommand(chatId, bot, messageLink[1]);
+            case "/untrack" -> new UntrackCommand(chatId, bot, messageLink[1]);
             case "/list" -> new ListCommand(chatId, bot);
             //TODO make smt for ignore this and warn user about this situation
             default -> throw new NotFoundCommandException("Bot hasn't this command");

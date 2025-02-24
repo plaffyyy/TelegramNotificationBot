@@ -6,7 +6,7 @@ import com.pengrad.telegrambot.TelegramBot;
 public final class ListCommand extends Command {
 
     public ListCommand(long chatId, TelegramBot bot) {
-        super(chatId, bot);
+        super(chatId, bot, "");
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 
 public final class HelpCommand extends Command {
     public HelpCommand(long chatId, TelegramBot bot) {
-        super(chatId, bot);
+        super(chatId, bot, "");
     }
 
     @Override

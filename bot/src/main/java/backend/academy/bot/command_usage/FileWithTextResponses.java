@@ -10,6 +10,8 @@ public final class FileWithTextResponses {
     public static final String helpWords = "You can use the following commands:";
 
     //for track command
-    public static final String trackWords = "";
+    public static final String trackWords = "Write the link, which you want to track";
+
+
 
 }

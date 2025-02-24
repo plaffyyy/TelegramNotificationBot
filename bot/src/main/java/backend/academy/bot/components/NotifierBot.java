@@ -23,11 +23,15 @@ public final class NotifierBot {
     public void init() {
         bot.setUpdatesListener(updates -> {
             for (Update update : updates) {
-                CommandHandler commandHandler = new CommandHandler(bot, update);
-                Command command = commandHandler.getCommandFromUpdate();
-                if (command == null) {
-                } else {
-                    command.execute();
+                try {
+                    CommandHandler commandHandler = new CommandHandler(bot, update);
+                    Command command = commandHandler.getCommandFromUpdate();
+                    if (command == null) {
+                    } else {
+                        command.execute();
+                    }
+                } catch (Exception e) {
+                    log.error(e);
                 }
 
             }

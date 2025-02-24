@@ -8,6 +8,7 @@ public abstract class Command {
 
     protected final long chatId;
     protected final TelegramBot bot;
+    protected final String link;
 
     public abstract void execute();
 
