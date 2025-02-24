@@ -2,6 +2,7 @@ package backend.academy.bot.commands;
 
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.FileWithTextResponses;
+import backend.academy.bot.model.AllLinks;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public final class ListCommand extends Command {
 
 
         ResponseEntity<LinkResponse> response = restClient.get()
-            .uri("http://scrapper:8081/links")
+            .uri(AllLinks.scrapperLinks)
             .header("Tg-Chat-Id", String.valueOf(chatId))
             .retrieve()
             .toEntity(LinkResponse.class);

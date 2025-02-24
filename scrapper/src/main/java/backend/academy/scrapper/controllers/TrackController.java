@@ -8,7 +8,9 @@ import backend.academy.scrapper.model.Link;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,7 +52,7 @@ public final class TrackController {
 
         Link link = new Link(url, tags, filters);
 
-        linkService.track(chatId, link);
+        linkService.addLink(chatId, link);
         log.info(linkService.getLinksByChatId(chatId).toString());
 
         TrackLinkResponse trackLinkResponse = new TrackLinkResponse(
@@ -59,4 +61,22 @@ public final class TrackController {
         return ResponseEntity.ok(trackLinkResponse);
     }
 
+    @DeleteMapping
+    public ResponseEntity<TrackLinkResponse> deleteLink(@RequestHeader("Tg-Chat-Id") Long chatId, @RequestBody Map<String, Object> request) {
+
+        String url = String.valueOf(request.get("url"));
+        Link link = linkService.removeLinkByUrl(chatId, url);
+
+//        if (link == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                .body(Map.of(
+//                    "description",
+//                ));
+//        }
+        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(
+            chatId, link.url(), link.tags(), link.filters()
+        );
+
+        return ResponseEntity.ok(trackLinkResponse);
+    }
 }

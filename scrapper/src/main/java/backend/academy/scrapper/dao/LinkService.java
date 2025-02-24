@@ -27,12 +27,24 @@ public class LinkService {
         return userLink.get(chatId);
     }
 
-    public void track(long chatId, Link link) {
+    public void addLink(long chatId, Link link) {
 
         userLink.get(chatId).add(link);
         log.warn(userLink.toString());
 
+    }
 
+    public Link removeLinkByUrl(long chatId, String url) {
+
+        Set<Link> links = userLink.remove(chatId);
+        for (Link link: links) {
+            if (link.url().equals(url)) {
+                links.remove(link);
+                userLink.put(chatId, links);
+                return link;
+            }
+        }
+        return null;
     }
 
 }
