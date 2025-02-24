@@ -20,8 +20,8 @@ import org.springframework.web.client.RestClient;
 
 @Slf4j
 public final class TrackCommand extends Command {
-    private String[] tags;
-    private String[] filters;
+    private List<String> tags;
+    private List<String> filters;
 
     private final CompletableFuture<Void> waitForTags = new CompletableFuture<>();
     private final CompletableFuture<Void> waitForFilters = new CompletableFuture<>();
@@ -52,8 +52,8 @@ public final class TrackCommand extends Command {
 
         Map<String, Object> jsonRequest = Map.of(
             "url", url,
-            "tags", List.of(tags),
-            "filters", List.of(filters)
+            "tags", tags,
+            "filters", filters
         );
 
         ResponseEntity<TrackLinkResponse> response = restClient.post()
@@ -78,12 +78,12 @@ public final class TrackCommand extends Command {
     }
 
     public void setTagsAndNotifyFuture(String tags) {
-        this.tags = tags.split(" ");
+        this.tags = List.of(tags.split(" "));
         waitForTags.complete(null);
     }
 
     public void setFiltersAndNotifyFuture(String filters) {
-        this.filters = filters.split(" ");
+        this.filters = List.of(filters.split(" "));
         waitForFilters.complete(null);
     }
 }

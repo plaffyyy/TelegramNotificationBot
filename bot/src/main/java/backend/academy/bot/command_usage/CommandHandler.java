@@ -27,8 +27,14 @@ public class CommandHandler {
 
                 case "/start" -> new StartCommand(chatId, bot);
                 case "/help" -> new HelpCommand(chatId, bot);
-                case "/track" -> new TrackCommand(chatId, bot, messageLink[1]);
-                case "/untrack" -> new UntrackCommand(chatId, bot, messageLink[1]);
+                case "/track" -> {
+                    String url = messageLink.length == 2 ? messageLink[1] : "";
+                    yield new TrackCommand(chatId, bot, url);
+                }
+                case "/untrack" -> {
+                    String url = messageLink.length == 2 ? messageLink[1] : "";
+                    yield new UntrackCommand(chatId, bot, url);
+                }
                 case "/list" -> new ListCommand(chatId, bot);
                 default -> throw new NotFoundCommandException("Bot hasn't this command");
             };

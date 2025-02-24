@@ -32,6 +32,9 @@ public final class NotifierBot {
         bot.setUpdatesListener(updates -> {
             for (Update update : updates) {
 
+                if (update.message() == null) {
+                    continue;
+                }
                 long chatId = update.message().chat().id();
                 String text = update.message().text();
 

@@ -35,7 +35,6 @@ public class LinkService {
     }
 
     public Link removeLinkByUrl(long chatId, String url) {
-
         Set<Link> links = userLink.remove(chatId);
         for (Link link: links) {
             if (link.url().equals(url)) {

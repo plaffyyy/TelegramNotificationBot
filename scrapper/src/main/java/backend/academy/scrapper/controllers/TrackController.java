@@ -4,6 +4,7 @@ package backend.academy.scrapper.controllers;
 import backend.academy.scrapper.dao.LinkService;
 import backend.academy.scrapper.dto.LinkResponse;
 import backend.academy.scrapper.dto.TrackLinkResponse;
+import backend.academy.scrapper.exceptions.ChatNotRegistered;
 import backend.academy.scrapper.model.Link;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.Set;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/links")
+
 public final class TrackController {
 
     @Autowired
@@ -34,18 +36,25 @@ public final class TrackController {
 
     @ResponseBody
     @GetMapping
-    public ResponseEntity<LinkResponse> getLinks(@PathVariable long chatId) {
-
+    public ResponseEntity<LinkResponse> getLinks(@RequestHeader("Tg-Chat-Id") String id) {
+        Long chatId = Long.valueOf(id);
         Set<Link> links = linkService.getLinksByChatId(chatId);
-
+        if (links == null) {
+            return null;
+        }
+//        try {
         LinkResponse linkResponse = new LinkResponse(links, links.size());
+//        } catch (NullPointerException e) {
+//            throw new ChatNotRegistered("Register this chat");
+//        }
+
         return ResponseEntity.ok(linkResponse);
 
     }
 
     @PostMapping
-    public ResponseEntity<TrackLinkResponse> trackLink(@RequestHeader("Tg-Chat-Id") Long chatId, @RequestBody Map<String, Object> request) {
-
+    public ResponseEntity<TrackLinkResponse> trackLink(@RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
+        Long chatId = Long.valueOf(id);
         String url = String.valueOf(request.get("url"));
         List<String> tags = (List<String>) request.getOrDefault("tags", List.of());
         List<String> filters = (List<String>) request.getOrDefault("filters", List.of());
@@ -62,11 +71,14 @@ public final class TrackController {
     }
 
     @DeleteMapping
-    public ResponseEntity<TrackLinkResponse> deleteLink(@RequestHeader("Tg-Chat-Id") Long chatId, @RequestBody Map<String, Object> request) {
-
+    public ResponseEntity<TrackLinkResponse> deleteLink(@RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
+        Long chatId = Long.valueOf(id);
         String url = String.valueOf(request.get("url"));
         Link link = linkService.removeLinkByUrl(chatId, url);
-
+        //FOR TESTING!!!
+        if (link == null) {
+            return null;
+        }
 //        if (link == null) {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND)
 //                .body(Map.of(
