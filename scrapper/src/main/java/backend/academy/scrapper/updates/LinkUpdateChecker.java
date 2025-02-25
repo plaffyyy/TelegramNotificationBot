@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 @Slf4j
@@ -32,12 +35,39 @@ public class LinkUpdateChecker {
         for (Link link: links) {
 
             JsonNode response = gitHubClient.getApi(link.url());
-            log.warn("Response: " + response.toString());
 
+            JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());
+            if (lastUpdate == null) {
+                updateRepository.addUpdate(link.url(), response);
+            }
+
+            if (!response.equals(lastUpdate)) {
+                //TODO: http request to bot
+                List<Long> ids = linkRepository.getIdsByLink(link);
+
+                sendUpdateToBot(link, ids);
+
+                updateRepository.changeUpdate(link.url(), lastUpdate);
+
+
+            }
 
 
         }
 
+
+    }
+    private void sendUpdateToBot(Link link, List<Long> ids) {
+        RestClient restClient = RestClient.builder().build();
+
+        Map<String, Object> jsonRequest = Map.of(
+            "id", new Random().nextLong(),
+            "url", link.url(),
+            "description", "empty description",
+            "tgChatIds", ids
+        );
+
+//        ResponseEntity<UpdateRepository> response
 
     }
 

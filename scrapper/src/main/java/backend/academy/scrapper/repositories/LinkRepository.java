@@ -58,4 +58,20 @@ public class LinkRepository {
         return null;
     }
 
+    public List<Long> getIdsByLink(Link link) {
+        List<Long> ids = new ArrayList<>();
+        userLink.forEach(
+            (k, v) -> {
+                for (Link tempLink: v) {
+                    if (tempLink.url().equals(link.url())) {
+                        ids.add(k);
+                        break;
+                    }
+                }
+            }
+        );
+        return ids;
+
+    }
+
 }
