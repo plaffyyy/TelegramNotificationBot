@@ -2,6 +2,9 @@ version: '3.8'
 
 services:
   scrapper:
+    env_file:
+      - .env
+
     build:
       context: .
       dockerfile: scrapper/Dockerfile
@@ -13,6 +16,7 @@ services:
   bot:
     env_file:
       - .env
+
     build:
       context: .
       dockerfile: bot/Dockerfile

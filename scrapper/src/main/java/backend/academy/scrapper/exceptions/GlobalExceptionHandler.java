@@ -11,7 +11,7 @@ import java.util.List;
 @ControllerAdvice
 public final class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiErrorResponse> handleAllExceptions(Exception ex) {
         ApiErrorResponse errorResponse = new ApiErrorResponse(
             "Внутренняя ошибка сервера",

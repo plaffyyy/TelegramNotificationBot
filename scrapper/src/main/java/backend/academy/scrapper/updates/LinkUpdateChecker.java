@@ -41,12 +41,11 @@ public class LinkUpdateChecker {
             JsonNode response = gitHubClient.getApi(link.url());
 
             JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());
+
             if (lastUpdate == null) {
                 updateRepository.addUpdate(link.url(), response);
-            }
 
-            if (!response.equals(lastUpdate)) {
-                //TODO: http request to bot
+            } else if (response.hashCode() != lastUpdate.hashCode()) {
                 List<Long> ids = linkRepository.getIdsByLink(link);
 
                 sendUpdateToBot(link, ids);

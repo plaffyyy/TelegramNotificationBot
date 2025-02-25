@@ -20,12 +20,12 @@ public final class ChatController {
     private final LinkRepository linkRepository;
 
     @PostMapping("/{id}")
-    public void register(@PathVariable long id) {
+    public void register(@PathVariable Long id) {
         linkRepository.createChatById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable long id) {
+    public void delete(@PathVariable Long id) {
         linkRepository.deleteChatById(id);
     }
 

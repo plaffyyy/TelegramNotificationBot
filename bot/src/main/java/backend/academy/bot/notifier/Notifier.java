@@ -16,10 +16,8 @@ public final class Notifier {
 
     public void notifyUsers(List<Long> ids, String message) {
 
-        for (Long id : ids) {
-
-            bot.execute(new SendMessage(id, message));
-
+        for (int i = 0; i < ids.size(); i++) {
+            bot.execute(new SendMessage(ids.get(i), message));
         }
 
     }

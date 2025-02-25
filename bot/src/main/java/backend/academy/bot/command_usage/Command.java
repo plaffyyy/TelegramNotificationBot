@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public abstract class Command {
 
-    protected final long chatId;
+    protected final Long chatId;
     protected final TelegramBot bot;
     protected final String url;
 

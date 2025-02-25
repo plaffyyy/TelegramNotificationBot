@@ -66,7 +66,7 @@ public final class TrackController {
 
     @DeleteMapping
     public ResponseEntity<TrackLinkResponse> deleteLink(@RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
-        Long chatId = Long.valueOf(id);
+        long chatId = Long.parseLong(id);
         String url = String.valueOf(request.get("url"));
         Link link = linkRepository.removeLinkByUrl(chatId, url);
         if (link == null) {

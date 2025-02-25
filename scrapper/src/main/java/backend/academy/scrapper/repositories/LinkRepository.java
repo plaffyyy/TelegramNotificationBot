@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @Repository
 public class LinkRepository {
 
-    private Map<Long, Set<Link>> userLink;
+    private final Map<Long, Set<Link>> userLink;
 
     public LinkRepository() {
         userLink = new HashMap<>();
@@ -28,10 +28,10 @@ public class LinkRepository {
         return urls;
     }
 
-    public void createChatById(long id) {
+    public void createChatById(Long id) {
         userLink.put(id, new HashSet<>());
     }
-    public void deleteChatById(long id) {
+    public void deleteChatById(Long id) {
         userLink.remove(id);
     }
 
@@ -39,7 +39,7 @@ public class LinkRepository {
         return userLink.get(chatId);
     }
 
-    public void addLink(long chatId, Link link) {
+    public void addLink(Long chatId, Link link) {
 
         userLink.get(chatId).add(link);
         log.warn(userLink.toString());
@@ -64,12 +64,13 @@ public class LinkRepository {
             (k, v) -> {
                 for (Link tempLink: v) {
                     if (tempLink.url().equals(link.url())) {
-                        ids.add(k);
+                        ids.add(Long.valueOf(k));
                         break;
                     }
                 }
             }
         );
+        log.info("Id of chats: " + ids);
         return ids;
 
     }
