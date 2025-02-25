@@ -4,6 +4,7 @@ import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.model.AllLinks;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
+import lombok.Getter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import backend.academy.bot.dto.TrackLinkResponse;
 import java.net.HttpURLConnection;
 import java.util.Map;
+
 
 public final class UntrackCommand extends Command {
     public UntrackCommand(long chatId, TelegramBot bot, String url) {
