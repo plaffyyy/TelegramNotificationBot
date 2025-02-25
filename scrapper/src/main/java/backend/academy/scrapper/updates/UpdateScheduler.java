@@ -13,7 +13,7 @@ public class UpdateScheduler {
     @Autowired
     private final LinkUpdateChecker linkUpdateChecker;
 
-    @Scheduled(fixedRate = 20, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedRate = 30, timeUnit = TimeUnit.SECONDS)
     public void updateCheck() {
 
         linkUpdateChecker.checkForUpdates();

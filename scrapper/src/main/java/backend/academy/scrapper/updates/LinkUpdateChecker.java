@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -27,6 +28,9 @@ public class LinkUpdateChecker {
     private final LinkRepository linkRepository;
     @Autowired
     private final UpdateRepository updateRepository;
+
+    private static final String botUpdates = "http://bot:8080/updates";
+
 
     public void checkForUpdates() {
 
@@ -67,7 +71,16 @@ public class LinkUpdateChecker {
             "tgChatIds", ids
         );
 
-//        ResponseEntity<UpdateRepository> response
+        ResponseEntity<UpdateRepository> response = restClient.post()
+            .uri(botUpdates)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(jsonRequest)
+            .retrieve()
+            .toEntity(UpdateRepository.class);
+
+        log.info("Update response: " + response.toString());
+
+
 
     }
 
