@@ -1,6 +1,7 @@
 package backend.academy.scrapper.clients;
 
 
+import backend.academy.scrapper.exceptions.IncorrectLinkException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,21 +20,21 @@ public final class GitHubClient {
     public JsonNode getApi(String url) {
         RestClient restClient = RestClient.builder().build();
 
-        String apiLink = "https://api.github.com/repos/" + url;
-
-        ResponseEntity<String> response = restClient.get()
-            .uri(apiLink)
-            .header("Accept", "application/vnd.github.v3+json")
-            .retrieve()
-            .toEntity(String.class);  // Получаем JSON как строку
-
-        log.warn("Response from GitHub: " + response.getBody());
+        String cleanUrl = url.replaceFirst("^https://github\\.com/", "");
+        String apiLink = "https://api.github.com/repos/" + cleanUrl;
+        log.warn("Api link: " + apiLink);
 
         try {
-            return objectMapper.readTree(response.getBody()); // Конвертируем JSON в объект
+            ResponseEntity<String> response = restClient.get()
+                .uri(apiLink)
+                .header("Accept", "application/vnd.github.v3+json")
+                .retrieve()
+                .toEntity(String.class);  // Получаем JSON как строку
+
+            return objectMapper.readTree(response.getBody());
         } catch (Exception e) {
             log.error("Ошибка при разборе ответа GitHub", e);
-            return null;
+            throw new IncorrectLinkException("Incorrect link");
         }
     }
 
