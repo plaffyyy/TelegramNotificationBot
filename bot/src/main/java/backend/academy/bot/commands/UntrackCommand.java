@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import backend.academy.bot.dto.TrackLinkResponse;
 import java.net.HttpURLConnection;
@@ -38,14 +39,20 @@ public final class UntrackCommand extends Command {
         Map<String, String> requestBody = Map.of("url", this.url);
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        ResponseEntity<TrackLinkResponse> response = restTemplate.exchange(
-            url, HttpMethod.DELETE, requestEntity, TrackLinkResponse.class
-        );
 
-        if (response.getStatusCode().value() == HttpURLConnection.HTTP_OK) {
-            bot.execute(new SendMessage(chatId, "Ссылка успешно удалена!"));
-        } else {
-            bot.execute(new SendMessage(chatId, "Ошибка при удалении ссылки."));
+        //TODO: do correct handle exceptions
+        try {
+            ResponseEntity<TrackLinkResponse> response = restTemplate.exchange(
+                url, HttpMethod.DELETE, requestEntity, TrackLinkResponse.class
+            );
+            bot.execute(new SendMessage(chatId, "Ссылка успешно удалена: " + url));
+        } catch (RestClientResponseException e) {
+            String errorMessage = "Ошибка при удалении ссылки";
+            bot.execute(new SendMessage(chatId, errorMessage));
+
+        } catch (Exception e) {
+            bot.execute(new SendMessage(chatId, "Произошла ошибка при удалении ссылки. Попробуйте позже."));
         }
+
     }
 }

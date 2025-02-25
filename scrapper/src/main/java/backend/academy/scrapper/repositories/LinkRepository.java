@@ -1,19 +1,31 @@
-package backend.academy.scrapper.dao;
+package backend.academy.scrapper.repositories;
 
 import backend.academy.scrapper.model.Link;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
-@Service
-public class LinkService {
+@Repository
+public class LinkRepository {
 
     private Map<Long, Set<Link>> userLink;
 
-    public LinkService() {
+    public LinkRepository() {
         userLink = new HashMap<>();
+    }
+
+    public Set<Link> getAllLinks() {
+        Set<Link> urls = new HashSet<>();
+
+        userLink.forEach(
+            (k, v) -> {
+                urls.addAll(v);
+            }
+        );
+        return urls;
     }
 
     public void createChatById(long id) {
