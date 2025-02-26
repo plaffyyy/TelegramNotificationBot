@@ -29,10 +29,16 @@ public class CommandHandler {
                 case "/help" -> new HelpCommand(chatId, bot);
                 case "/track" -> {
                     String url = messageLink.length == 2 ? messageLink[1] : "";
+                    if (url.isEmpty()) {
+                        throw new NotFoundCommandException("Введите ссылку в команде");
+                    }
                     yield new TrackCommand(chatId, bot, url);
                 }
                 case "/untrack" -> {
                     String url = messageLink.length == 2 ? messageLink[1] : "";
+                    if (url.isEmpty()) {
+                        throw new NotFoundCommandException("Введите ссылку в команде");
+                    }
                     yield new UntrackCommand(chatId, bot, url);
                 }
                 case "/list" -> new ListCommand(chatId, bot);

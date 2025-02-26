@@ -5,15 +5,20 @@ import backend.academy.bot.command_usage.CommandHandler;
 import backend.academy.bot.commands.TrackCommand;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SetMyCommands;
 import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import static backend.academy.bot.command_usage.AvailableCommands.commands;
 
 @Log4j2
 @AllArgsConstructor
@@ -29,6 +34,9 @@ public final class NotifierBot {
 
     @PostConstruct
     public void init() {
+
+        registerCommands();
+
         bot.setUpdatesListener(updates -> {
             for (Update update : updates) {
 
@@ -65,5 +73,15 @@ public final class NotifierBot {
 
     }
 
+    private void registerCommands() {
+        List<BotCommand> commandsList = new ArrayList<>();
+        commands.forEach(
+            (c, d) -> {
+                commandsList.add(new BotCommand(c, d));
+            }
+        );
+        log.info("My commands: " + Arrays.toString(commandsList.toArray(new BotCommand[5])));
+        bot.execute(new SetMyCommands(commandsList.toArray(new BotCommand[5])));
+    }
 
 }
