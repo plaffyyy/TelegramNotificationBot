@@ -1,13 +1,14 @@
 package backend.academy.scrapper.repositories;
 
 import backend.academy.scrapper.model.Link;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Slf4j
+@Slf4j @Getter
 @Repository
 public class LinkRepository {
 
