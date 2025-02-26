@@ -12,13 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Slf4j
-@AllArgsConstructor
 @Component
-public final class GitHubClient {
+public non-sealed class GitHubClient extends Client {
 
     @Autowired
-    private final String gitHubToken;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private String gitHubToken;
 
     public JsonNode getApi(String url) {
         log.info("Token: " + gitHubToken);
