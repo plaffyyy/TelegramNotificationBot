@@ -2,12 +2,6 @@ package backend.academy.scrapper.db_tests;
 
 import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.repositories.LinkRepository;
-import org.junit.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LinkRepositoryTests {
 
@@ -75,6 +75,21 @@ public class LinkRepositoryTests {
             assertEquals(link, linkFromRepo);
         }
 
+
+    }
+    @Test
+    public void removeLinkByUrlAndIdTest() {
+        LinkRepository linkRepository = new LinkRepository();
+        linkRepository.createChatById(1L);
+        Link linkForRemove = new Link("https://github.com/plaffyyy/SpringMVCLearn", null, null);
+        linkRepository.addLink(1L, linkForRemove);
+        linkRepository.addLink(1L, new Link("https://github.com/plaffyyy", null, null));
+        long id = 1L;
+        String url = "https://github.com/plaffyyy/SpringMVCLearn";
+
+        Link link = linkRepository.removeLinkByUrl(id, url);
+
+        assertEquals(linkForRemove, link);
 
     }
 }
