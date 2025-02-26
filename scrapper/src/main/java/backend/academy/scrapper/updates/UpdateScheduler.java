@@ -1,11 +1,11 @@
 package backend.academy.scrapper.updates;
 
+import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @EnableScheduling
@@ -19,7 +19,5 @@ public class UpdateScheduler {
     public void updateCheck() {
 
         linkUpdateChecker.checkForUpdates();
-
     }
-
 }

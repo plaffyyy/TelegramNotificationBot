@@ -4,7 +4,8 @@ import com.pengrad.telegrambot.TelegramBot;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor @Getter
+@AllArgsConstructor
+@Getter
 public abstract class Command {
 
     protected final Long chatId;
@@ -12,5 +13,4 @@ public abstract class Command {
     protected final String url;
 
     public abstract void execute();
-
 }

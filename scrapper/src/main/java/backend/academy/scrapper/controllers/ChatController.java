@@ -28,6 +28,4 @@ public final class ChatController {
     public void delete(@PathVariable Long id) {
         linkRepository.deleteChatById(id);
     }
-
-
 }

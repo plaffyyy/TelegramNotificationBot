@@ -30,8 +30,6 @@ public class UpdatesController {
         String message = "📢 Уведомление!\nНовое обновление в ссылке : " + url;
         notifier.notifyUsers(ids, message);
 
-
         return ResponseEntity.ok(null);
     }
-
 }

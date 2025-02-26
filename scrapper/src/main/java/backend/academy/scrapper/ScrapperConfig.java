@@ -12,5 +12,6 @@ public record ScrapperConfig(@NotEmpty String githubToken, StackOverflowCredenti
     public String gitHubToken() {
         return githubToken;
     }
+
     public record StackOverflowCredentials(@NotEmpty String key, @NotEmpty String accessToken) {}
 }

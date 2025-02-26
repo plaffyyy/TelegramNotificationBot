@@ -1,5 +1,7 @@
 package backend.academy.bot.components;
 
+import static backend.academy.bot.command_usage.AvailableCommands.commands;
+
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.CommandHandler;
 import backend.academy.bot.commands.TrackCommand;
@@ -18,7 +20,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import static backend.academy.bot.command_usage.AvailableCommands.commands;
 
 @Log4j2
 @AllArgsConstructor
@@ -30,7 +31,6 @@ public final class NotifierBot {
 
     public static final Map<Long, TrackCommand> waitingForTags = new ConcurrentHashMap<>();
     public static final Map<Long, TrackCommand> waitingForFilters = new ConcurrentHashMap<>();
-
 
     @PostConstruct
     public void init() {
@@ -46,20 +46,17 @@ public final class NotifierBot {
                 long chatId = update.message().chat().id();
                 String text = update.message().text();
 
-
                 if (waitingForTags.containsKey(chatId)) {
                     TrackCommand trackCommand = waitingForTags.remove(chatId);
                     trackCommand.setTagsAndNotifyFuture(text);
                     return UpdatesListener.CONFIRMED_UPDATES_ALL;
                 }
 
-
                 if (waitingForFilters.containsKey(chatId)) {
                     TrackCommand trackCommand = waitingForFilters.remove(chatId);
                     trackCommand.setFiltersAndNotifyFuture(text);
                     return UpdatesListener.CONFIRMED_UPDATES_ALL;
                 }
-
 
                 CommandHandler commandHandler = new CommandHandler(bot, chatId, text);
                 Command command = commandHandler.getCommandFromUpdate();
@@ -70,18 +67,14 @@ public final class NotifierBot {
 
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
         });
-
     }
 
     private void registerCommands() {
         List<BotCommand> commandsList = new ArrayList<>();
-        commands.forEach(
-            (c, d) -> {
-                commandsList.add(new BotCommand(c, d));
-            }
-        );
+        commands.forEach((c, d) -> {
+            commandsList.add(new BotCommand(c, d));
+        });
         log.info("My commands: " + Arrays.toString(commandsList.toArray(new BotCommand[5])));
         bot.execute(new SetMyCommands(commandsList.toArray(new BotCommand[5])));
     }
-
 }

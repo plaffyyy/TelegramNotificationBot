@@ -25,15 +25,12 @@ public non-sealed class StackOverflowClient extends Client {
             throw new IncorrectLinkException("Incorrect Stack Overflow link");
         }
 
-        String apiLink = "https://api.stackexchange.com/2.3/questions/" + questionId +
-            "?order=desc&sort=activity&site=stackoverflow";
+        String apiLink = "https://api.stackexchange.com/2.3/questions/" + questionId
+                + "?order=desc&sort=activity&site=stackoverflow";
         log.warn("Api link: " + apiLink);
 
         try {
-            String response = restClient.get()
-                .uri(apiLink)
-                .retrieve()
-                .body(String.class);
+            String response = restClient.get().uri(apiLink).retrieve().body(String.class);
 
             log.warn("stack json " + response);
 
@@ -43,7 +40,5 @@ public non-sealed class StackOverflowClient extends Client {
             log.error("Ошибка при разборе ответа StackOverflow", e);
             throw new IncorrectLinkException("Incorrect link");
         }
-
-
     }
 }

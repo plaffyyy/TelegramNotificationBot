@@ -22,6 +22,5 @@ public final class HelpCommand extends Command {
         });
 
         bot.execute(new SendMessage(chatId, infoMessage.toString()));
-
     }
 }

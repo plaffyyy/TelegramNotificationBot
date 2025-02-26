@@ -7,7 +7,6 @@ import backend.academy.bot.commands.TrackCommand;
 import backend.academy.bot.commands.UntrackCommand;
 import backend.academy.bot.exceptions.NotFoundCommandException;
 import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.AllArgsConstructor;
 
@@ -24,7 +23,6 @@ public class CommandHandler {
 
         try {
             return switch (messageLink[0]) {
-
                 case "/start" -> new StartCommand(chatId, bot);
                 case "/help" -> new HelpCommand(chatId, bot);
                 case "/track" -> {
@@ -48,8 +46,5 @@ public class CommandHandler {
             bot.execute(new SendMessage(chatId, "Нет такой команды"));
         }
         return null;
-
     }
-
-
 }

@@ -1,11 +1,13 @@
 package backend.academy.scrapper.controllers;
 
-
-import backend.academy.scrapper.repositories.LinkRepository;
 import backend.academy.scrapper.dto.LinkResponse;
 import backend.academy.scrapper.dto.TrackLinkResponse;
 import backend.academy.scrapper.exceptions.LinkNotFoundException;
 import backend.academy.scrapper.model.Link;
+import backend.academy.scrapper.repositories.LinkRepository;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +20,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Slf4j
 @AllArgsConstructor
 @RestController
 @RequestMapping("/links")
-
 public final class TrackController {
 
     @Autowired
@@ -40,13 +38,12 @@ public final class TrackController {
 
         LinkResponse linkResponse = new LinkResponse(links, links.size());
 
-
         return ResponseEntity.ok(linkResponse);
-
     }
 
     @PostMapping
-    public ResponseEntity<TrackLinkResponse> trackLink(@RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
+    public ResponseEntity<TrackLinkResponse> trackLink(
+            @RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
         Long chatId = Long.valueOf(id);
         String url = String.valueOf(request.get("url"));
 
@@ -58,14 +55,13 @@ public final class TrackController {
         linkRepository.addLink(chatId, link);
         log.info(linkRepository.getLinksByChatId(chatId).toString());
 
-        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(
-            chatId, url, tags, filters
-        );
+        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatId, url, tags, filters);
         return ResponseEntity.ok(trackLinkResponse);
     }
 
     @DeleteMapping
-    public ResponseEntity<TrackLinkResponse> deleteLink(@RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
+    public ResponseEntity<TrackLinkResponse> deleteLink(
+            @RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
         long chatId = Long.parseLong(id);
         String url = String.valueOf(request.get("url"));
         Link link = linkRepository.removeLinkByUrl(chatId, url);
@@ -73,9 +69,7 @@ public final class TrackController {
             throw new LinkNotFoundException("Ссылка " + url + " не найдена");
         }
 
-        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(
-            chatId, link.url(), link.tags(), link.filters()
-        );
+        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
 
         return ResponseEntity.ok(trackLinkResponse);
     }

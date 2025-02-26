@@ -1,8 +1,8 @@
 package backend.academy.bot.notifier;
 
 import com.pengrad.telegrambot.TelegramBot;
-import java.util.List;
 import com.pengrad.telegrambot.request.SendMessage;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,5 @@ public final class Notifier {
         for (int i = 0; i < ids.size(); i++) {
             bot.execute(new SendMessage(ids.get(i), message));
         }
-
     }
-
 }

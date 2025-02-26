@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 
-
 @Slf4j
 public final class TrackCommand extends Command {
     private List<String> tags;
@@ -29,7 +28,6 @@ public final class TrackCommand extends Command {
     public TrackCommand(long chatId, TelegramBot bot, String url) {
         super(chatId, bot, url);
     }
-
 
     @SneakyThrows
     @Override
@@ -43,29 +41,27 @@ public final class TrackCommand extends Command {
 
             waitForFilters.thenRun(this::addLink);
         });
-
-
     }
 
     private void addLink() {
         RestClient restClient = RestClient.builder().build();
 
         Map<String, Object> jsonRequest = Map.of(
-            "url", url,
-            "tags", tags,
-            "filters", filters
-        );
+                "url", url,
+                "tags", tags,
+                "filters", filters);
 
-        ResponseEntity<TrackLinkResponse> response = restClient.post()
-            .uri(AllLinks.scrapperLinks)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header("Tg-Chat-Id", String.valueOf(chatId))
-            .body(jsonRequest)
-            .retrieve()
-            .toEntity(TrackLinkResponse.class);
+        ResponseEntity<TrackLinkResponse> response = restClient
+                .post()
+                .uri(AllLinks.scrapperLinks)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Tg-Chat-Id", String.valueOf(chatId))
+                .body(jsonRequest)
+                .retrieve()
+                .toEntity(TrackLinkResponse.class);
 
-        //check my tags and filters
-        log.info("Tags: " +  tags);
+        // check my tags and filters
+        log.info("Tags: " + tags);
         log.info("Filters: " + filters);
 
         int responseCode = response.getStatusCode().value();

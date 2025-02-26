@@ -19,8 +19,5 @@ public final class ClientHandler {
         } else {
             throw new UndefinedUrlException("govno link");
         }
-
-
     }
-
 }

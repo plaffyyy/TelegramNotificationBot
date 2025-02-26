@@ -1,6 +1,5 @@
 package backend.academy.scrapper.clients;
 
-
 import backend.academy.scrapper.exceptions.IncorrectLinkException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
@@ -28,12 +27,13 @@ public non-sealed class GitHubClient extends Client {
         log.warn("Api link: " + apiLink);
 
         try {
-            ResponseEntity<String> response = restClient.get()
-                .uri(apiLink)
-                .header("Accept", "application/vnd.github.v3+json")
-                .header("Authorization", "Bearer " + gitHubToken)
-                .retrieve()
-                .toEntity(String.class);  // Получаем JSON как строку
+            ResponseEntity<String> response = restClient
+                    .get()
+                    .uri(apiLink)
+                    .header("Accept", "application/vnd.github.v3+json")
+                    .header("Authorization", "Bearer " + gitHubToken)
+                    .retrieve()
+                    .toEntity(String.class); // Получаем JSON как строку
 
             return objectMapper.readTree(response.getBody());
         } catch (Exception e) {
@@ -41,6 +41,4 @@ public non-sealed class GitHubClient extends Client {
             throw new IncorrectLinkException("Incorrect link");
         }
     }
-
-
 }
