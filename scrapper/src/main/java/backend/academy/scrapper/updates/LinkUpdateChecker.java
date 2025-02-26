@@ -1,11 +1,15 @@
 package backend.academy.scrapper.updates;
 
+import backend.academy.scrapper.clients.Client;
+import backend.academy.scrapper.clients.ClientHandler;
 import backend.academy.scrapper.clients.GitHubClient;
 import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.repositories.LinkRepository;
 import backend.academy.scrapper.repositories.UpdateRepository;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,34 +27,38 @@ import java.util.Set;
 public class LinkUpdateChecker {
 
     @Autowired
-    private final GitHubClient gitHubClient;
-    @Autowired
     private final LinkRepository linkRepository;
     @Autowired
     private final UpdateRepository updateRepository;
+    @Autowired
+    private final ClientHandler clientHandler;
 
     private static final String botUpdates = "http://bot:8080/updates";
 
-
+    @SneakyThrows
     public void checkForUpdates() {
 
         Set<Link> links = linkRepository.getAllLinks();
 
         for (Link link: links) {
 
-            JsonNode response = gitHubClient.getApi(link.url());
-
+            Client client = clientHandler.handleClients(link.url());
+            JsonNode response = client.getApi(link.url());
             JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String responseJson = objectMapper.writeValueAsString(response);
+            String lastUpdateJson = objectMapper.writeValueAsString(lastUpdate);
 
             if (lastUpdate == null) {
                 updateRepository.addUpdate(link.url(), response);
 
-            } else if (response.hashCode() != lastUpdate.hashCode()) {
+            } else if (!responseJson.equals(lastUpdateJson)) {
                 List<Long> ids = linkRepository.getIdsByLink(link);
 
                 sendUpdateToBot(link, ids);
 
-                updateRepository.changeUpdate(link.url(), lastUpdate);
+                updateRepository.changeUpdate(link.url(), response);
 
 
             }

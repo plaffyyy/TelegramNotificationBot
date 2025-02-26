@@ -2,6 +2,7 @@ package backend.academy.scrapper.repositories;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.Getter;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UpdateRepository {
 
-    private Map<String, JsonNode> urlUpdate;
+    private final Map<String, JsonNode> urlUpdate;
 
     public UpdateRepository() {
         urlUpdate = new HashMap<>();

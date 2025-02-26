@@ -3,7 +3,6 @@ package backend.academy.scrapper.clients;
 
 import backend.academy.scrapper.exceptions.IncorrectLinkException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +11,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Slf4j
+@AllArgsConstructor
 @Component
 public non-sealed class GitHubClient extends Client {
-
     @Autowired
-    private String gitHubToken;
+    private final String gitHubToken;
 
+    @Override
     public JsonNode getApi(String url) {
         log.info("Token: " + gitHubToken);
 
