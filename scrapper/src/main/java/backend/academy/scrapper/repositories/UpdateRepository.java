@@ -3,8 +3,10 @@ package backend.academy.scrapper.repositories;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 import org.springframework.stereotype.Repository;
 
+@Getter
 @Repository
 public class UpdateRepository {
 
