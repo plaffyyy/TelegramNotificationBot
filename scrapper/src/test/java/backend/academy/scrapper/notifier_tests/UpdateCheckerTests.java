@@ -1,5 +1,7 @@
 package backend.academy.scrapper.notifier_tests;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
 import backend.academy.scrapper.clients.GitHubClient;
@@ -12,8 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.Test;
 import org.mockito.Mockito;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 
 public class UpdateCheckerTests {
 
@@ -36,13 +36,11 @@ public class UpdateCheckerTests {
         JsonNode mockResponse = objectMapper.readTree("{\"update\": \"new_commit\"}");
         Mockito.when(clientMock.getApi(Mockito.anyString())).thenReturn(mockResponse);
 
-        LinkUpdateChecker linkUpdateChecker = new LinkUpdateChecker(linkRepository, updateRepository, clientHandlerMock);
+        LinkUpdateChecker linkUpdateChecker =
+                new LinkUpdateChecker(linkRepository, updateRepository, clientHandlerMock);
         linkUpdateChecker.checkForUpdates();
 
         JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());
         assertNotNull(lastUpdate);
-
     }
-
-
 }

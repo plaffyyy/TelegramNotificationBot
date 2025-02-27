@@ -61,8 +61,8 @@ public final class TrackCommand extends Command {
                 .toEntity(TrackLinkResponse.class);
 
         // check my tags and filters
-        log.info("Tags: " + tags);
-        log.info("Filters: " + filters);
+        log.info("Tags: {}", tags);
+        log.info("Filters: {}", filters);
 
         int responseCode = response.getStatusCode().value();
 

@@ -1,13 +1,13 @@
 package backend.academy.scrapper.clients_tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
 import backend.academy.scrapper.clients.GitHubClient;
 import backend.academy.scrapper.clients.StackOverflowClient;
 import backend.academy.scrapper.exceptions.UndefinedUrlException;
 import org.junit.Test;
-import org.junit.jupiter.api.function.Executable;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class HandlerTests {
 
@@ -20,8 +20,8 @@ public class HandlerTests {
         Client client = clientHandler.handleClients(url);
 
         assertInstanceOf(GitHubClient.class, client);
-
     }
+
     @Test
     public void clientHandleTestStack() {
 
@@ -31,8 +31,8 @@ public class HandlerTests {
         Client client = clientHandler.handleClients(url);
 
         assertInstanceOf(StackOverflowClient.class, client);
-
     }
+
     @Test
     public void clientHandleTestUndefined() {
 

@@ -2,9 +2,11 @@ package backend.academy.bot.commands;
 
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.dto.TrackLinkResponse;
+import backend.academy.bot.exceptions.IncorrectLinkForDelete;
 import backend.academy.bot.model.AllLinks;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
+import java.net.HttpURLConnection;
 import java.util.Map;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -41,7 +43,14 @@ public final class UntrackCommand extends Command {
         try {
             ResponseEntity<TrackLinkResponse> response =
                     restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, TrackLinkResponse.class);
-            bot.execute(new SendMessage(chatId, "Ссылка успешно удалена: " + this.url));
+
+            int responseCode = response.getStatusCode().value();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                bot.execute(new SendMessage(chatId, "Ссылка успешно удалена: " + this.url));
+            } else {
+                throw new IncorrectLinkForDelete("Ошибка в ссылке");
+            }
+
         } catch (RestClientResponseException e) {
             String errorMessage = "Ошибка при удалении ссылки";
             bot.execute(new SendMessage(chatId, errorMessage));

@@ -41,14 +41,14 @@ public class LinkRepository {
     public void addLink(Long chatId, Link link) {
 
         userLink.get(chatId).add(link);
-        log.warn(userLink.toString());
+        log.warn("user link: {}", userLink.toString());
     }
 
     public Link removeLinkByUrl(long chatId, String url) {
 
         Set<Link> linksByChatId = getLinksByChatId(chatId);
         boolean hasLink = false;
-        for (Link link: linksByChatId) {
+        for (Link link : linksByChatId) {
             if (link.url().equals(url)) {
                 hasLink = true;
                 break;
@@ -65,7 +65,6 @@ public class LinkRepository {
             }
         }
         return null;
-
     }
 
     public List<Long> getIdsByLink(Link link) {
@@ -73,12 +72,12 @@ public class LinkRepository {
         userLink.forEach((k, v) -> {
             for (Link tempLink : v) {
                 if (tempLink.url().equals(link.url())) {
-                    ids.add(Long.valueOf(k));
+                    ids.add(k);
                     break;
                 }
             }
         });
-        log.info("Id of chats: " + ids);
+        log.info("Id of chats: {}", ids);
         return ids;
     }
 }

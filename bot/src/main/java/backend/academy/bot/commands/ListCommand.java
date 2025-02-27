@@ -6,11 +6,11 @@ import backend.academy.bot.dto.LinkResponse;
 import backend.academy.bot.model.AllLinks;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
+import java.net.HttpURLConnection;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
-import java.net.HttpURLConnection;
 
 @Slf4j
 public final class ListCommand extends Command {
@@ -27,13 +27,11 @@ public final class ListCommand extends Command {
             RestClient restClient = RestClient.builder().build();
 
             ResponseEntity<LinkResponse> response = restClient
-                .get()
-                .uri(AllLinks.scrapperLinks)
-                .header("Tg-Chat-Id", String.valueOf(chatId))
-                .retrieve()
-                .toEntity(LinkResponse.class);
-
-            log.warn(response.toString());
+                    .get()
+                    .uri(AllLinks.scrapperLinks)
+                    .header("Tg-Chat-Id", String.valueOf(chatId))
+                    .retrieve()
+                    .toEntity(LinkResponse.class);
 
             int responseCode = response.getStatusCode().value();
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -49,9 +47,6 @@ public final class ListCommand extends Command {
         } catch (HttpClientErrorException e) {
             bot.execute(new SendMessage(chatId, FileWithTextResponses.errorList));
         }
-
-
-
     }
 
     public String formatingLinks(LinkResponse linkResponse) {

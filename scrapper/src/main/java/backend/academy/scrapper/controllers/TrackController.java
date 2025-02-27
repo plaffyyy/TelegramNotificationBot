@@ -53,7 +53,7 @@ public final class TrackController {
         Link link = new Link(url, tags, filters);
 
         linkRepository.addLink(chatId, link);
-        log.info(linkRepository.getLinksByChatId(chatId).toString());
+        log.info("links by id {}", linkRepository.getLinksByChatId(chatId).toString());
 
         TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatId, url, tags, filters);
         return ResponseEntity.ok(trackLinkResponse);
@@ -70,7 +70,8 @@ public final class TrackController {
                 throw new LinkNotFoundException("Ссылка " + url + " не найдена");
             }
 
-            TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
+            TrackLinkResponse trackLinkResponse =
+                    new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
 
             return ResponseEntity.ok(trackLinkResponse);
         } catch (Exception e) {

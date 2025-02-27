@@ -18,14 +18,15 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-@Slf4j @Getter
+@Slf4j
+@Getter
 @Component
 @AllArgsConstructor
 public class LinkUpdateChecker {
+    private final Random random = new Random();
 
     @Autowired
     private final LinkRepository linkRepository;
@@ -65,7 +66,7 @@ public class LinkUpdateChecker {
                     updateRepository.changeUpdate(link.url(), response);
                 }
             } catch (UndefinedUrlException e) {
-                continue;
+                log.error("Ошибка в LinkUpdateChecker: {}", e.getMessage());
             }
         }
     }
@@ -74,16 +75,14 @@ public class LinkUpdateChecker {
         RestClient restClient = RestClient.builder().build();
 
         Map<String, Object> jsonRequest = Map.of(
-                "id", new Random().nextLong(), "url", link.url(), "description", "empty description", "tgChatIds", ids);
+                "id", random.nextLong(), "url", link.url(), "description", "empty description", "tgChatIds", ids);
 
-        ResponseEntity<UpdateRepository> response = restClient
+        restClient
                 .post()
                 .uri(botUpdates)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(jsonRequest)
                 .retrieve()
                 .toEntity(UpdateRepository.class);
-
-        log.info("Update response: " + response.toString());
     }
 }

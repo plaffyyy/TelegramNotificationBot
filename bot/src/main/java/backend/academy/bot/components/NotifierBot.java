@@ -74,7 +74,7 @@ public final class NotifierBot {
         commands.forEach((c, d) -> {
             commandsList.add(new BotCommand(c, d));
         });
-        log.info("My commands: " + Arrays.toString(commandsList.toArray(new BotCommand[5])));
+        log.info("My commands: {}", Arrays.toString(commandsList.toArray(new BotCommand[5])));
         bot.execute(new SetMyCommands(commandsList.toArray(new BotCommand[5])));
     }
 }
