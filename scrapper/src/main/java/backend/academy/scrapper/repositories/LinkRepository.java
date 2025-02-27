@@ -45,6 +45,17 @@ public class LinkRepository {
     }
 
     public Link removeLinkByUrl(long chatId, String url) {
+
+        Set<Link> linksByChatId = getLinksByChatId(chatId);
+        boolean hasLink = false;
+        for (Link link: linksByChatId) {
+            if (link.url().equals(url)) {
+                hasLink = true;
+                break;
+            }
+        }
+        if (!hasLink) return null;
+
         Set<Link> links = userLink.remove(chatId);
         for (Link link : links) {
             if (link.url().equals(url)) {
@@ -54,6 +65,7 @@ public class LinkRepository {
             }
         }
         return null;
+
     }
 
     public List<Long> getIdsByLink(Link link) {

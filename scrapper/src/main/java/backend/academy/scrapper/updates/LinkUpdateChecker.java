@@ -46,6 +46,7 @@ public class LinkUpdateChecker {
 
             Client client = clientHandler.handleClients(link.url());
             JsonNode response = client.getApi(link.url());
+            if (response == null) continue;
             JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());
 
             ObjectMapper objectMapper = new ObjectMapper();

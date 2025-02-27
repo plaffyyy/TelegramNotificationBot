@@ -8,7 +8,9 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+import java.net.HttpURLConnection;
 
 @Slf4j
 public final class ListCommand extends Command {
@@ -19,28 +21,37 @@ public final class ListCommand extends Command {
 
     @Override
     public void execute() {
+        try {
+            bot.execute(new SendMessage(chatId, FileWithTextResponses.listWords));
 
-        bot.execute(new SendMessage(chatId, FileWithTextResponses.listWords));
+            RestClient restClient = RestClient.builder().build();
 
-        RestClient restClient = RestClient.builder().build();
-
-        ResponseEntity<LinkResponse> response = restClient
+            ResponseEntity<LinkResponse> response = restClient
                 .get()
                 .uri(AllLinks.scrapperLinks)
                 .header("Tg-Chat-Id", String.valueOf(chatId))
                 .retrieve()
                 .toEntity(LinkResponse.class);
 
-        log.warn(response.toString());
-        LinkResponse linkResponse = response.getBody();
-        if (linkResponse == null || linkResponse.links().isEmpty()) {
-            bot.execute(new SendMessage(chatId, "Нет отслеживаемых ссылок."));
-            return;
+            log.warn(response.toString());
+
+            int responseCode = response.getStatusCode().value();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                LinkResponse linkResponse = response.getBody();
+                if (linkResponse == null || linkResponse.links().isEmpty()) {
+                    bot.execute(new SendMessage(chatId, "Нет отслеживаемых ссылок."));
+                    return;
+                }
+                bot.execute(new SendMessage(chatId, formatingLinks(linkResponse)));
+            } else {
+                bot.execute(new SendMessage(chatId, FileWithTextResponses.errorList));
+            }
+        } catch (HttpClientErrorException e) {
+            bot.execute(new SendMessage(chatId, FileWithTextResponses.errorList));
         }
 
 
 
-        bot.execute(new SendMessage(chatId, formatingLinks(linkResponse)));
     }
 
     public String formatingLinks(LinkResponse linkResponse) {

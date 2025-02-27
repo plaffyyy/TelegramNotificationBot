@@ -41,7 +41,7 @@ public final class UntrackCommand extends Command {
         try {
             ResponseEntity<TrackLinkResponse> response =
                     restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, TrackLinkResponse.class);
-            bot.execute(new SendMessage(chatId, "Ссылка успешно удалена: " + url));
+            bot.execute(new SendMessage(chatId, "Ссылка успешно удалена: " + this.url));
         } catch (RestClientResponseException e) {
             String errorMessage = "Ошибка при удалении ссылки";
             bot.execute(new SendMessage(chatId, errorMessage));

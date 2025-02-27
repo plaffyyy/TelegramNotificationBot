@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @Slf4j
@@ -38,7 +39,7 @@ public non-sealed class GitHubClient extends Client {
             return objectMapper.readTree(response.getBody());
         } catch (Exception e) {
             log.error("Ошибка при разборе ответа GitHub", e);
-            throw new IncorrectLinkException("Incorrect link");
+            return null;
         }
     }
 }

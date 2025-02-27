@@ -64,13 +64,17 @@ public final class TrackController {
             @RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
         long chatId = Long.parseLong(id);
         String url = String.valueOf(request.get("url"));
-        Link link = linkRepository.removeLinkByUrl(chatId, url);
-        if (link == null) {
-            throw new LinkNotFoundException("Ссылка " + url + " не найдена");
+        try {
+            Link link = linkRepository.removeLinkByUrl(chatId, url);
+            if (link == null) {
+                throw new LinkNotFoundException("Ссылка " + url + " не найдена");
+            }
+
+            TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
+
+            return ResponseEntity.ok(trackLinkResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
         }
-
-        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
-
-        return ResponseEntity.ok(trackLinkResponse);
     }
 }
