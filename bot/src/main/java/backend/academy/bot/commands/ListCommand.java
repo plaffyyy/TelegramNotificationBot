@@ -38,9 +38,14 @@ public final class ListCommand extends Command {
             return;
         }
 
+
+
+        bot.execute(new SendMessage(chatId, formatingLinks(linkResponse)));
+    }
+
+    public String formatingLinks(LinkResponse linkResponse) {
         StringBuilder allLinks = new StringBuilder("Отслеживаемые ссылки:\n");
         linkResponse.links().forEach(link -> allLinks.append(link.url()).append("\n"));
-
-        bot.execute(new SendMessage(chatId, allLinks.toString()));
+        return allLinks.toString();
     }
 }
