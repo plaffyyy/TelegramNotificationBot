@@ -37,8 +37,12 @@ public non-sealed class StackOverflowClient extends Client {
             return objectMapper.readTree(response);
 
         } catch (Exception e) {
-            log.error("Ошибка при разборе ответа StackOverflow", e);
-            throw new IncorrectLinkException("Incorrect link");
+            try {
+                log.error("Ошибка при разборе ответа StackOverflow", e);
+                throw new IncorrectLinkException("Incorrect link");
+            } catch (IncorrectLinkException ex) {
+                return null;
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package backend.academy.scrapper.updates;
 
 import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
+import backend.academy.scrapper.exceptions.UndefinedUrlException;
 import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.repositories.LinkRepository;
 import backend.academy.scrapper.repositories.UpdateRepository;
@@ -43,25 +44,28 @@ public class LinkUpdateChecker {
         Set<Link> links = linkRepository.getAllLinks();
 
         for (Link link : links) {
+            try {
+                Client client = clientHandler.handleClients(link.url());
+                JsonNode response = client.getApi(link.url());
+                if (response == null) continue;
+                JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());
 
-            Client client = clientHandler.handleClients(link.url());
-            JsonNode response = client.getApi(link.url());
-            if (response == null) continue;
-            JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());
+                ObjectMapper objectMapper = new ObjectMapper();
+                String responseJson = objectMapper.writeValueAsString(response);
+                String lastUpdateJson = objectMapper.writeValueAsString(lastUpdate);
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            String responseJson = objectMapper.writeValueAsString(response);
-            String lastUpdateJson = objectMapper.writeValueAsString(lastUpdate);
+                if (lastUpdate == null) {
+                    updateRepository.addUpdate(link.url(), response);
 
-            if (lastUpdate == null) {
-                updateRepository.addUpdate(link.url(), response);
+                } else if (!responseJson.equals(lastUpdateJson)) {
+                    List<Long> ids = linkRepository.getIdsByLink(link);
 
-            } else if (!responseJson.equals(lastUpdateJson)) {
-                List<Long> ids = linkRepository.getIdsByLink(link);
+                    sendUpdateToBot(link, ids);
 
-                sendUpdateToBot(link, ids);
-
-                updateRepository.changeUpdate(link.url(), response);
+                    updateRepository.changeUpdate(link.url(), response);
+                }
+            } catch (UndefinedUrlException e) {
+                continue;
             }
         }
     }
