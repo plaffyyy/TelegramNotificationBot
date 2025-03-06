@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Getter
 @Repository
 public class UpdateRepository {
-    // TODO сделать ключ id ссылки, чтобы у разных пользователей было все корректно
+    // TODO сделать ключ id ссылки, чтобы у разных пользователей было все корректно(более логично просто)
     private final Map<String, JsonNode> urlUpdate;
 
     public UpdateRepository() {

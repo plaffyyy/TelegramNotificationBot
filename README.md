@@ -1,4 +1,3 @@
-
 # Link Tracker
 
 Проект сделан в рамках курса Академия Бэкенда.
@@ -21,17 +20,15 @@
 - TELEGRAM_TOKEN=<Ваш токен>
 - GITHUB_TOKEN=<Ваш токен>
 
-
-     
 ### Запуск
-   Для этого потребуется установленные Java 23, Maven, Docker.
-   - Запустить из модального окна IDEA [Run Anything](https://www.jetbrains.com/help/idea/running-anything.html) команду:
 
-          mvn clean verify
-     
-   - В консоли написать команду:
+Для этого потребуется установленные Java 23, Maven, Docker.
+- Запустить из модального окна IDEA [Run Anything](https://www.jetbrains.com/help/idea/running-anything.html) команду:
+
+        mvn clean verify
+
+- В консоли написать команду:
 
           docker-compose up --build
-     
 
 Для дополнительной справки: [HELP.md](./HELP.md)
