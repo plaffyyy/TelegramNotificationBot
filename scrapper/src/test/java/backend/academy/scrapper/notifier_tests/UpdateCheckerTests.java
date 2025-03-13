@@ -39,7 +39,7 @@ public class UpdateCheckerTests {
         Mockito.when(clientMock.getApi(Mockito.anyString())).thenReturn(mockResponse);
 
         LinkUpdateChecker linkUpdateChecker =
-                new LinkUpdateChecker(linkRepository, updateRepository, clientHandlerMock);
+                new LinkUpdateChecker(linkRepository, updateRepository, clientHandlerMock, null);
         linkUpdateChecker.checkForUpdates();
 
         JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());

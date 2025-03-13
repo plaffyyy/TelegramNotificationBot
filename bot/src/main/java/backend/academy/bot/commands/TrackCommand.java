@@ -8,6 +8,7 @@ import backend.academy.bot.services.CommandRequestService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -31,11 +32,12 @@ public final class TrackCommand extends Command {
     @SneakyThrows
     @Override
     public void execute() {
-        bot.execute(new SendMessage(chatId, "Введите теги (опционально) через пробел"));
+        bot.execute(new SendMessage(chatId, "Введите теги (опционально, введите - если не надо) через пробел"));
         NotifierBot.waitingForTags.put(chatId, this);
 
         waitForTags.thenRun(() -> {
-            bot.execute(new SendMessage(chatId, "Настройте фильтры (опционально) через пробел"));
+            bot.execute(
+                    new SendMessage(chatId, "Настройте фильтры (опционально, введите - если не надо) через пробел"));
             NotifierBot.waitingForFilters.put(chatId, this);
 
             waitForFilters.thenRun(this::addLink);
@@ -61,12 +63,20 @@ public final class TrackCommand extends Command {
     }
 
     public void setTagsAndNotifyFuture(String tags) {
-        this.tags = List.of(tags.split(" "));
+        if (!tags.equals("-")) {
+            this.tags = List.of(tags.split(" "));
+        } else {
+            this.tags = new ArrayList<>();
+        }
         waitForTags.complete(null);
     }
 
     public void setFiltersAndNotifyFuture(String filters) {
-        this.filters = List.of(filters.split(" "));
+        if (!filters.equals("-")) {
+            this.filters = List.of(filters.split(" "));
+        } else {
+            this.filters = new ArrayList<>();
+        }
         waitForFilters.complete(null);
     }
 }
