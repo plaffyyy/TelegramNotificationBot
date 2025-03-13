@@ -1,8 +1,8 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
 url:
-  links: "http://scrapper:8081/links"
-  tg-chats: "http://scrapper:8081/tg-chat"
+  links: "http://scrapper:8082/links"
+  tg-chats: "http://scrapper:8082/tg-chat"
 spring:
   application:
     name: Bot

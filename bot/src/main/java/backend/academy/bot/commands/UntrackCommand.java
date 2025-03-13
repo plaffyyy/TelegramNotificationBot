@@ -3,6 +3,7 @@ package backend.academy.bot.commands;
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.dto.TrackLinkResponse;
 import backend.academy.bot.exceptions.IncorrectLinkForDelete;
+import backend.academy.bot.services.CommandRequestService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
@@ -14,8 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 
 public final class UntrackCommand extends Command {
-    public UntrackCommand(long chatId, TelegramBot bot, String url) {
-        super(chatId, bot, url);
+    public UntrackCommand(long chatId, TelegramBot bot, CommandRequestService commandRequestService, String url) {
+        super(commandRequestService, chatId, bot, "");
     }
 
     @Override

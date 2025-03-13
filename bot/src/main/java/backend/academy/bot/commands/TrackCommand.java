@@ -4,6 +4,7 @@ import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.FileWithTextResponses;
 import backend.academy.bot.components.NotifierBot;
 import backend.academy.bot.dto.TrackLinkResponse;
+import backend.academy.bot.services.CommandRequestService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
@@ -23,8 +24,8 @@ public final class TrackCommand extends Command {
     private final CompletableFuture<Void> waitForTags = new CompletableFuture<>();
     private final CompletableFuture<Void> waitForFilters = new CompletableFuture<>();
 
-    public TrackCommand(long chatId, TelegramBot bot, String url) {
-        super(chatId, bot, url);
+    public TrackCommand(long chatId, TelegramBot bot, CommandRequestService commandRequestService, String url) {
+        super(commandRequestService, chatId, bot, url);
     }
 
     @SneakyThrows

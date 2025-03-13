@@ -2,6 +2,7 @@ package backend.academy.bot.commands;
 
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.FileWithTextResponses;
+import backend.academy.bot.services.CommandRequestService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
@@ -11,8 +12,8 @@ import org.springframework.http.ResponseEntity;
 @Slf4j
 public final class StartCommand extends Command {
 
-    public StartCommand(long chatId, TelegramBot bot) {
-        super(chatId, bot, "");
+    public StartCommand(long chatId, TelegramBot bot, CommandRequestService commandRequestService) {
+        super(commandRequestService, chatId, bot, "");
     }
 
     @Override

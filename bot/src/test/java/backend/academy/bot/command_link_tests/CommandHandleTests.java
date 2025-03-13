@@ -24,7 +24,7 @@ public final class CommandHandleTests {
     public void testCommandHandle() {
 
         CommandHandler commandHandler =
-                new CommandHandler(mockBot, 111L, "/track https://github.com/plaffyyy/SpringMVCLearn");
+                new CommandHandler(mockBot, 111L, "/track https://github.com/plaffyyy/SpringMVCLearn", null);
 
         Command command = commandHandler.getCommandFromUpdate();
 
@@ -39,7 +39,7 @@ public final class CommandHandleTests {
     })
     public void testParseLink(String line, String url) {
 
-        CommandHandler commandHandler = new CommandHandler(mockBot, 111L, line);
+        CommandHandler commandHandler = new CommandHandler(mockBot, 111L, line, null);
 
         Command command = commandHandler.getCommandFromUpdate();
 
@@ -51,7 +51,7 @@ public final class CommandHandleTests {
     @CsvSource({"/track", "/track https://github.com/plaffyyy/SpringMVCLearn dasdasdasdd", "/untrack"})
     public void testParseLinkIncorrect(String line) {
 
-        CommandHandler commandHandler = new CommandHandler(mockBot, 111L, "/track");
+        CommandHandler commandHandler = new CommandHandler(mockBot, 111L, "/track", null);
 
         Command command = commandHandler.getCommandFromUpdate();
 

@@ -5,6 +5,7 @@ import static backend.academy.bot.command_usage.AvailableCommands.commands;
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.CommandHandler;
 import backend.academy.bot.commands.TrackCommand;
+import backend.academy.bot.services.CommandRequestService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.BotCommand;
@@ -28,6 +29,8 @@ public final class NotifierBot {
 
     @Autowired
     private final TelegramBot bot;
+
+    private final CommandRequestService commandRequestService;
 
     public static final Map<Long, TrackCommand> waitingForTags = new ConcurrentHashMap<>();
     public static final Map<Long, TrackCommand> waitingForFilters = new ConcurrentHashMap<>();
@@ -59,7 +62,7 @@ public final class NotifierBot {
                     return UpdatesListener.CONFIRMED_UPDATES_ALL;
                 }
 
-                CommandHandler commandHandler = new CommandHandler(bot, chatId, text);
+                CommandHandler commandHandler = new CommandHandler(bot, chatId, text, commandRequestService);
                 Command command = commandHandler.getCommandFromUpdate();
                 if (command != null) {
                     command.execute();

@@ -15,7 +15,7 @@ public class CommandsTests {
     @Test
     public void formatingLinksTest() {
 
-        ListCommand listCommand = new ListCommand(1L, null);
+        ListCommand listCommand = new ListCommand(1L, null, null);
         LinkResponse linkResponse = new LinkResponse(
                 Set.of(
                         new Link("https://github.com/plaffyyy/SpringMVCLearn", null, null),

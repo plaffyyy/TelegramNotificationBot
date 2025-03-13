@@ -3,12 +3,13 @@ package backend.academy.bot.commands;
 import backend.academy.bot.command_usage.AvailableCommands;
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.FileWithTextResponses;
+import backend.academy.bot.services.CommandRequestService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 
 public final class HelpCommand extends Command {
-    public HelpCommand(long chatId, TelegramBot bot) {
-        super(chatId, bot, "");
+    public HelpCommand(long chatId, TelegramBot bot, CommandRequestService commandRequestService) {
+        super(commandRequestService, chatId, bot, "");
     }
 
     @Override

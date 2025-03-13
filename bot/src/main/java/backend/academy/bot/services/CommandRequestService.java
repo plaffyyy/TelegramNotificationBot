@@ -23,8 +23,8 @@ public final class CommandRequestService {
         this.urlForChatApi = urlForChatApi;
     }
 
-    RestClient restClient = RestClient.builder().build();
-    RestTemplate restTemplate = new RestTemplate();
+    private final RestClient restClient = RestClient.builder().build();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public ResponseEntity<TrackLinkResponse> trackCommandResponse(Map<String, Object> jsonRequest, Long chatId) {
         return restClient

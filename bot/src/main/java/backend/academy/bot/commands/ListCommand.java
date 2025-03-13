@@ -3,6 +3,7 @@ package backend.academy.bot.commands;
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.FileWithTextResponses;
 import backend.academy.bot.dto.LinkResponse;
+import backend.academy.bot.services.CommandRequestService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
@@ -13,8 +14,8 @@ import org.springframework.web.client.HttpClientErrorException;
 @Slf4j
 public final class ListCommand extends Command {
 
-    public ListCommand(long chatId, TelegramBot bot) {
-        super(chatId, bot, "");
+    public ListCommand(long chatId, TelegramBot bot, CommandRequestService commandRequestService) {
+        super(commandRequestService, chatId, bot, "");
     }
 
     @Override
