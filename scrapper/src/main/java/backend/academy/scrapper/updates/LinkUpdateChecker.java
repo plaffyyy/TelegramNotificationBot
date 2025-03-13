@@ -6,6 +6,7 @@ import backend.academy.scrapper.exceptions.UndefinedUrlException;
 import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.repositories.LinkRepository;
 import backend.academy.scrapper.repositories.UpdateRepository;
+import backend.academy.scrapper.services.UpdateRequestService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -27,19 +28,10 @@ import org.springframework.web.client.RestClient;
 @Component
 @AllArgsConstructor
 public class LinkUpdateChecker {
-    private final Random random = new Random();
-
-    @Autowired
     private final LinkRepository linkRepository;
-
-    @Autowired
     private final UpdateRepository updateRepository;
-
-    @Autowired
     private final ClientHandler clientHandler;
-
-    @Value("${url.updates}")
-    private static String botUpdates;
+    private final UpdateRequestService updateRequestService;
 
     @SneakyThrows
     public void checkForUpdates() {
@@ -63,7 +55,7 @@ public class LinkUpdateChecker {
                 } else if (!responseJson.equals(lastUpdateJson)) {
                     List<Long> ids = linkRepository.getIdsByLink(link);
 
-                    sendUpdateToBot(link, ids);
+                    updateRequestService.sendUpdateToBot(link, ids);
 
                     updateRepository.changeUpdate(link.url(), response);
                 }
@@ -73,18 +65,4 @@ public class LinkUpdateChecker {
         }
     }
 
-    private void sendUpdateToBot(Link link, List<Long> ids) {
-        RestClient restClient = RestClient.builder().build();
-
-        Map<String, Object> jsonRequest = Map.of(
-                "id", random.nextLong(), "url", link.url(), "description", "empty description", "tgChatIds", ids);
-
-        restClient
-                .post()
-                .uri(botUpdates)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(jsonRequest)
-                .retrieve()
-                .toEntity(UpdateRepository.class);
-    }
 }

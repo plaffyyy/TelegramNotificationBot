@@ -2,6 +2,7 @@ package backend.academy.scrapper.repositories;
 
 import backend.academy.scrapper.model.Link;
 import java.util.*;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -18,12 +19,7 @@ public class LinkRepository {
     }
 
     public Set<Link> getAllLinks() {
-        Set<Link> urls = new HashSet<>();
-
-        userLink.forEach((k, v) -> {
-            urls.addAll(v);
-        });
-        return urls;
+        return userLink.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
     }
 
     public void createChatById(Long id) {
