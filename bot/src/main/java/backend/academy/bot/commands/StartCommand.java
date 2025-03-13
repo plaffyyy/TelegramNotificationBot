@@ -26,7 +26,7 @@ public final class StartCommand extends Command {
 
         ResponseEntity<Void> response = restClient
                 .post()
-                .uri("http://scrapper:8081/tg-chat/{chatId}", chatId)
+                .uri(urlForChatApi + "/{chatId}", chatId)
                 .retrieve()
                 .toBodilessEntity();
 

@@ -40,7 +40,7 @@ public class CommandHandler {
                     yield new UntrackCommand(chatId, bot, url);
                 }
                 case "/list" -> new ListCommand(chatId, bot);
-                default -> throw new NotFoundCommandException("Bot hasn't this command");
+                default -> throw new NotFoundCommandException("У бота нет такой команды");
             };
         } catch (NotFoundCommandException e) {
             bot.execute(new SendMessage(chatId, "Нет такой команды"));

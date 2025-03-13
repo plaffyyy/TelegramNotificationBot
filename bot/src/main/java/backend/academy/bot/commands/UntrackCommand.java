@@ -3,7 +3,6 @@ package backend.academy.bot.commands;
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.dto.TrackLinkResponse;
 import backend.academy.bot.exceptions.IncorrectLinkForDelete;
-import backend.academy.bot.model.AllLinks;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
@@ -30,8 +29,6 @@ public final class UntrackCommand extends Command {
     private void untrackLink() {
         RestTemplate restTemplate = new RestTemplate();
 
-        String url = AllLinks.scrapperLinks;
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Tg-Chat-Id", String.valueOf(chatId));
@@ -42,7 +39,7 @@ public final class UntrackCommand extends Command {
         // TODO: do correct handle exceptions
         try {
             ResponseEntity<TrackLinkResponse> response =
-                    restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, TrackLinkResponse.class);
+                    restTemplate.exchange(urlForApi, HttpMethod.DELETE, requestEntity, TrackLinkResponse.class);
 
             int responseCode = response.getStatusCode().value();
             if (responseCode == HttpURLConnection.HTTP_OK) {

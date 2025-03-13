@@ -41,6 +41,7 @@ public final class NotifierBot {
             for (Update update : updates) {
 
                 if (update.message() == null) {
+                    log.info("Пришло пустое сообщение");
                     continue;
                 }
                 long chatId = update.message().chat().id();

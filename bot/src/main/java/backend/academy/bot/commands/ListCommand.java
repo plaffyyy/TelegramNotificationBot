@@ -3,11 +3,11 @@ package backend.academy.bot.commands;
 import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.FileWithTextResponses;
 import backend.academy.bot.dto.LinkResponse;
-import backend.academy.bot.model.AllLinks;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -28,7 +28,7 @@ public final class ListCommand extends Command {
 
             ResponseEntity<LinkResponse> response = restClient
                     .get()
-                    .uri(AllLinks.scrapperLinks)
+                    .uri(urlForApi)
                     .header("Tg-Chat-Id", String.valueOf(chatId))
                     .retrieve()
                     .toEntity(LinkResponse.class);

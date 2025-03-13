@@ -4,7 +4,6 @@ import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.FileWithTextResponses;
 import backend.academy.bot.components.NotifierBot;
 import backend.academy.bot.dto.TrackLinkResponse;
-import backend.academy.bot.model.AllLinks;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
@@ -53,7 +52,7 @@ public final class TrackCommand extends Command {
 
         ResponseEntity<TrackLinkResponse> response = restClient
                 .post()
-                .uri(AllLinks.scrapperLinks)
+                .uri(urlForApi)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Tg-Chat-Id", String.valueOf(chatId))
                 .body(jsonRequest)
