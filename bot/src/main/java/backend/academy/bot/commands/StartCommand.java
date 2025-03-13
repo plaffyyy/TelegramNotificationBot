@@ -7,7 +7,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClient;
 
 @Slf4j
 public final class StartCommand extends Command {
@@ -22,13 +21,7 @@ public final class StartCommand extends Command {
         bot.execute(new SendMessage(chatId, FileWithTextResponses.firstWords));
         bot.execute(new SendMessage(chatId, FileWithTextResponses.startInformation));
 
-        RestClient restClient = RestClient.builder().build();
-
-        ResponseEntity<Void> response = restClient
-                .post()
-                .uri(urlForChatApi + "/{chatId}", chatId)
-                .retrieve()
-                .toBodilessEntity();
+        ResponseEntity<Void> response = commandRequestService.startCommandResponse(chatId);
 
         int responseCode = response.getStatusCode().value();
 

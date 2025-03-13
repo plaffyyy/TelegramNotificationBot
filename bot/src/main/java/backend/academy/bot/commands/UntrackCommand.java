@@ -9,11 +9,9 @@ import java.net.HttpURLConnection;
 import java.util.Map;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.client.RestTemplate;
 
 public final class UntrackCommand extends Command {
     public UntrackCommand(long chatId, TelegramBot bot, String url) {
@@ -22,12 +20,10 @@ public final class UntrackCommand extends Command {
 
     @Override
     public void execute() {
-
         untrackLink();
     }
 
     private void untrackLink() {
-        RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -36,10 +32,8 @@ public final class UntrackCommand extends Command {
         Map<String, String> requestBody = Map.of("url", this.url);
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        // TODO: do correct handle exceptions
         try {
-            ResponseEntity<TrackLinkResponse> response =
-                    restTemplate.exchange(urlForApi, HttpMethod.DELETE, requestEntity, TrackLinkResponse.class);
+            ResponseEntity<TrackLinkResponse> response = commandRequestService.untrackCommandResponse(requestEntity);
 
             int responseCode = response.getStatusCode().value();
             if (responseCode == HttpURLConnection.HTTP_OK) {

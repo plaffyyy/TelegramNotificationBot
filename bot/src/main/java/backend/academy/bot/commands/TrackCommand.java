@@ -12,12 +12,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClient;
 
 @Slf4j
 public final class TrackCommand extends Command {
+
     private List<String> tags;
     private List<String> filters;
 
@@ -43,25 +42,13 @@ public final class TrackCommand extends Command {
     }
 
     private void addLink() {
-        RestClient restClient = RestClient.builder().build();
 
         Map<String, Object> jsonRequest = Map.of(
                 "url", url,
                 "tags", tags,
                 "filters", filters);
 
-        ResponseEntity<TrackLinkResponse> response = restClient
-                .post()
-                .uri(urlForApi)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Tg-Chat-Id", String.valueOf(chatId))
-                .body(jsonRequest)
-                .retrieve()
-                .toEntity(TrackLinkResponse.class);
-
-        // check my tags and filters
-        log.info("Tags: {}", tags);
-        log.info("Filters: {}", filters);
+        ResponseEntity<TrackLinkResponse> response = commandRequestService.trackCommandResponse(jsonRequest, chatId);
 
         int responseCode = response.getStatusCode().value();
 

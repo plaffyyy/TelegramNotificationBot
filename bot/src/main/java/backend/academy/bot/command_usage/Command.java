@@ -1,23 +1,28 @@
 package backend.academy.bot.command_usage;
 
+import backend.academy.bot.services.CommandRequestService;
 import com.pengrad.telegrambot.TelegramBot;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Getter
+@Component
 public abstract class Command {
+    public Command(Long chatId, TelegramBot bot, String url) {
+        this.chatId = chatId;
+        this.bot = bot;
+        this.url = url;
+    }
 
-    @Value("${url.links}")
-    protected String urlForApi;
+    @Autowired
+    protected CommandRequestService commandRequestService;
 
-    @Value(("${url.tg-chats}"))
-    protected String urlForChatApi;
-
-    protected final Long chatId;
-    protected final TelegramBot bot;
-    protected final String url;
+    protected Long chatId;
+    protected TelegramBot bot;
+    protected String url;
 
     public abstract void execute();
 }
