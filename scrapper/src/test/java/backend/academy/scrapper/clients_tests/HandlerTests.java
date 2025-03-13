@@ -17,7 +17,7 @@ public class HandlerTests {
     public void clientHandleTestGit() {
 
         String url = "https://github.com/plaffyyy/SpringMVCLearn";
-        ClientHandler clientHandler = new ClientHandler(null);
+        ClientHandler clientHandler = new ClientHandler(null, null);
 
         Client client = clientHandler.handleClients(url);
 
@@ -29,7 +29,7 @@ public class HandlerTests {
     public void clientHandleTestStack() {
 
         String url = "https://stackoverflow.com/questions/79470759/react-and-typescript-state-is-of-type-unknown";
-        ClientHandler clientHandler = new ClientHandler(null);
+        ClientHandler clientHandler = new ClientHandler(null, null);
 
         Client client = clientHandler.handleClients(url);
 
@@ -41,7 +41,7 @@ public class HandlerTests {
     public void clientHandleTestUndefined() {
 
         String url = "https://plaffyyy/SpringMVCLearn";
-        ClientHandler clientHandler = new ClientHandler(null);
+        ClientHandler clientHandler = new ClientHandler(null, null);
 
         boolean isUndefinedUrlException = false;
         try {

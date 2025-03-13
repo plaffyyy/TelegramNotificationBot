@@ -1,21 +1,23 @@
 package backend.academy.scrapper.clients;
 
 import backend.academy.scrapper.exceptions.IncorrectLinkException;
+import backend.academy.scrapper.services.ClientRequestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 @Slf4j
 @Component
 public non-sealed class StackOverflowClient extends Client {
 
+    public StackOverflowClient(ClientRequestService clientRequestService) {
+        super("", clientRequestService);
+    }
+
     @Override
     public JsonNode getApi(String url) {
-
-        RestClient restClient = RestClient.builder().build();
 
         String questionId = url.replaceFirst("^https://stackoverflow\\.com/questions/(\\d+).*", "$1");
 
@@ -28,7 +30,7 @@ public non-sealed class StackOverflowClient extends Client {
         log.warn("Api link: {}", apiLink);
 
         try {
-            String response = restClient.get().uri(apiLink).retrieve().body(String.class);
+            String response = clientRequestService.stackOverflowResponse(apiLink);
 
             log.warn("stack json {}", response);
 

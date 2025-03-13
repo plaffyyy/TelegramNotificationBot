@@ -16,7 +16,7 @@ import org.springframework.web.client.RestClientResponseException;
 
 public final class UntrackCommand extends Command {
     public UntrackCommand(long chatId, TelegramBot bot, CommandRequestService commandRequestService, String url) {
-        super(commandRequestService, chatId, bot, "");
+        super(commandRequestService, chatId, bot, url);
     }
 
     @Override

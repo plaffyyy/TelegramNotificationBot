@@ -26,7 +26,7 @@ public class StackOverflowTests {
     @DisplayName("Проверка того, что получаю ошибку, если нет такого вопроса на StackOverflow")
     @Test
     public void testHttp404Error() {
-        StackOverflowClient client = new StackOverflowClient();
+        StackOverflowClient client = new StackOverflowClient(null);
         String url = wireMockServer.baseUrl() + "/notfound";
 
         wireMockServer.stubFor(

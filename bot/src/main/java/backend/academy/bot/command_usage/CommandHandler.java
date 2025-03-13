@@ -19,7 +19,6 @@ public class CommandHandler {
     private final String textMessage;
     private final CommandRequestService commandRequestService;
 
-
     public Command getCommandFromUpdate() {
 
         String[] messageLink = textMessage.split(" ");

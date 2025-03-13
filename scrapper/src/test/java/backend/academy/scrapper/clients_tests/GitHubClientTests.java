@@ -22,7 +22,7 @@ public class GitHubClientTests {
     @DisplayName("Проверка того, что ничего не получаю с некорректной ссылки, так как при ошибке выдается Null")
     @Test
     public void testHttp401Error() {
-        GitHubClient client = new GitHubClient("");
+        GitHubClient client = new GitHubClient("", null);
         String url = wireMockServer.baseUrl() + "/notfound";
 
         wireMockServer.stubFor(
