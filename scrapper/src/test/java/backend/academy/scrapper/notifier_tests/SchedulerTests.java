@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @EnableScheduling // включаем планировщик в тестах
 public class SchedulerTests {
 
+    @DisplayName("Проверка, что получаю изменение с scheduler меньше чем за 35 секунд")
     @Test
     public void testSchedulerRuns() {
         LinkUpdateChecker mockLinkUpdateChecker = mock(LinkUpdateChecker.class);

@@ -8,9 +8,11 @@ import backend.academy.scrapper.clients.GitHubClient;
 import backend.academy.scrapper.clients.StackOverflowClient;
 import backend.academy.scrapper.exceptions.UndefinedUrlException;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 
 public class HandlerTests {
 
+    @DisplayName("Проверка, что правильно распознает ссылку как Git")
     @Test
     public void clientHandleTestGit() {
 
@@ -22,6 +24,7 @@ public class HandlerTests {
         assertInstanceOf(GitHubClient.class, client);
     }
 
+    @DisplayName("Проверка, что правильно распознает ссылку как StackOverflow")
     @Test
     public void clientHandleTestStack() {
 
@@ -33,6 +36,7 @@ public class HandlerTests {
         assertInstanceOf(StackOverflowClient.class, client);
     }
 
+    @DisplayName("Проверка, что при некорректной ссылке вылетает ошибка")
     @Test
     public void clientHandleTestUndefined() {
 

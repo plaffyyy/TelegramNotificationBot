@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -25,6 +26,7 @@ public class LinkRepositoryTests {
                 Arguments.of(2L, "https://github.com/plaffyyy/SpringMVCLearn"));
     }
 
+    @DisplayName("Проверка на корректность добавления ссылок")
     @ParameterizedTest
     @MethodSource("provideLinks")
     public void addLinkAndCreateChatTest(long id, String path) {
@@ -45,6 +47,7 @@ public class LinkRepositoryTests {
                 Arguments.of(1L, "https://github.com/plaffyyy/SpringMVCLearn"));
     }
 
+    @DisplayName("Проверка, что если добавлено несколько одинаковых ссылок")
     @ParameterizedTest
     @MethodSource("provideLinksForDuplicate")
     public void duplicateLinksByIdTest(long id, String path) {
@@ -58,6 +61,7 @@ public class LinkRepositoryTests {
         assertEquals(expectedMap, linkRepository.userLink());
     }
 
+    @DisplayName("Проверка на корректность добавления ссылок вместе со всеми аттрибутами")
     @Test
     public void saveLinkAndGetLinksWithAttributesTest() {
         long chatId = 1L;
@@ -76,6 +80,7 @@ public class LinkRepositoryTests {
         }
     }
 
+    @DisplayName("Проверка что ссылка корретно удаляется")
     @Test
     public void removeLinkByUrlAndIdTest() {
         LinkRepository linkRepository = new LinkRepository();
@@ -91,6 +96,7 @@ public class LinkRepositoryTests {
         assertEquals(linkForRemove, link);
     }
 
+    @DisplayName("Проверка, что все ссылки уникальные")
     @Test
     public void getIdsByLinkTest() {
 

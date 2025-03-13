@@ -17,7 +17,7 @@ public final class ClientHandler {
         } else if (url.contains("stack")) {
             return new StackOverflowClient();
         } else {
-            throw new UndefinedUrlException("govno link");
+            throw new UndefinedUrlException("Incorrect link");
         }
     }
 }

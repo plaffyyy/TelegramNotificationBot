@@ -11,6 +11,7 @@ import backend.academy.scrapper.exceptions.IncorrectLinkException;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -22,6 +23,7 @@ public class StackOverflowTests {
             .options(new WireMockConfiguration().dynamicPort())
             .build();
 
+    @DisplayName("Проверка того, что получаю ошибку, если нет такого вопроса на StackOverflow")
     @Test
     public void testHttp404Error() {
         StackOverflowClient client = new StackOverflowClient();

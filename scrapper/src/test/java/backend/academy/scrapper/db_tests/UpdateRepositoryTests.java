@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -18,6 +19,7 @@ public class UpdateRepositoryTests {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @DisplayName("Проверка, что корректно добавляются обновления")
     @SneakyThrows
     @ParameterizedTest
     @CsvSource({"https://github.com/plaffyyy/SpringMVCLearn", "https://github.com/plaffyyy"})
@@ -37,6 +39,7 @@ public class UpdateRepositoryTests {
         assertEquals(jsonNode, update);
     }
 
+    @DisplayName("Проверка, что ссылка только добавлена и это первое изменение")
     @SneakyThrows
     @ParameterizedTest
     @CsvSource({"https://github.com/plaffyyy/asdasdasd", "https://github.com/plaffyyy"})

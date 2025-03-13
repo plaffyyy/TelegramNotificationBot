@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import backend.academy.scrapper.clients.GitHubClient;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -18,6 +19,7 @@ public class GitHubClientTests {
             .options(new WireMockConfiguration().dynamicPort())
             .build();
 
+    @DisplayName("Проверка того, что ничего не получаю с некорректной ссылки, так как при ошибке выдается Null")
     @Test
     public void testHttp401Error() {
         GitHubClient client = new GitHubClient("");

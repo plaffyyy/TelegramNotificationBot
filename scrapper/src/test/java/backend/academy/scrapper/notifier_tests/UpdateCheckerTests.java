@@ -13,12 +13,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.mockito.Mockito;
 
 public class UpdateCheckerTests {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
+    @DisplayName("Проверка, что корректно изменяются обновления у ссылок")
     @SneakyThrows
     @Test
     public void checkForUpdatesTest() {

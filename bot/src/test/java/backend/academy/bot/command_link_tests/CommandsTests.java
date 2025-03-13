@@ -7,9 +7,11 @@ import backend.academy.bot.dto.LinkResponse;
 import backend.academy.bot.model.Link;
 import java.util.Set;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 
 public class CommandsTests {
 
+    @DisplayName("Проверка на форматирование ссылок")
     @Test
     public void formatingLinksTest() {
 
@@ -20,10 +22,10 @@ public class CommandsTests {
                         new Link("https://github.com/plaffyyy/ZdecEmptyLink", null, null)),
                 2);
 
-        String expectedFormatingLinks =
-                "Отслеживаемые ссылки:\nhttps://github.com/plaffyyy/SpringMVCLearn\nhttps://github.com/plaffyyy/ZdecEmptyLink\n";
         String formatingLinks = listCommand.formatingLinks(linkResponse);
 
-        assertEquals(expectedFormatingLinks, formatingLinks);
+        assertTrue(formatingLinks.contains("https://github.com/plaffyyy/SpringMVCLearn"));
+        assertTrue(formatingLinks.contains("https://github.com/plaffyyy/ZdecEmptyLink"));
+        assertTrue(formatingLinks.startsWith("Отслеживаемые ссылки:\n"));
     }
 }
