@@ -2,20 +2,27 @@ version: '3.8'
 
 services:
   scrapper:
+    env_file:
+      - .env
+
     build:
       context: .
       dockerfile: scrapper/Dockerfile
+    ports:
+      - 8082:8082
     networks:
       - app-network
 
   bot:
     env_file:
       - .env
+
     build:
       context: .
       dockerfile: bot/Dockerfile
     depends_on:
-      - scrapper
+      scrapper:
+        condition: service_started
     networks:
       - app-network
 

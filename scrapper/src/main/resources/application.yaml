@@ -3,7 +3,8 @@ app:
   stackoverflow:
     key: ${SO_TOKEN_KEY}
     access-token: ${SO_ACCESS_TOKEN}
-
+url:
+  updates: "http://bot:8080/updates"
 spring:
   application:
     name: Scrapper
@@ -15,7 +16,7 @@ spring:
     open-in-view: false
 
 server:
-  port: 8081
+  port: 8082
 
 springdoc:
   swagger-ui:
