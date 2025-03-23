@@ -6,34 +6,47 @@ import backend.academy.bot.commands.StartCommand;
 import backend.academy.bot.commands.TrackCommand;
 import backend.academy.bot.commands.UntrackCommand;
 import backend.academy.bot.exceptions.NotFoundCommandException;
+import backend.academy.bot.services.CommandRequestService;
 import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class CommandHandler {
 
-    private TelegramBot bot;
-    private Update update;
+    private final TelegramBot bot;
+    private final long chatId;
+    private final String textMessage;
+    private final CommandRequestService commandRequestService;
 
     public Command getCommandFromUpdate() {
 
-        if (update.message() == null) return null;
-        String textMessage = update.message().text();
-        long chatId = update.message().chat().id();
+        String[] messageLink = textMessage.split(" ");
 
-        return switch (textMessage) {
-
-            case "/start" -> new StartCommand(chatId, bot);
-            case "/help" -> new HelpCommand(chatId, bot);
-            case "/track" -> new TrackCommand(chatId, bot);
-            case "/untrack" -> new UntrackCommand(chatId, bot);
-            case "/list" -> new ListCommand(chatId, bot);
-            //TODO make smt for ignore this and warn user about this situation
-            default -> throw new NotFoundCommandException("Bot hasn't this command");
-        };
-
+        try {
+            return switch (messageLink[0]) {
+                case "/start" -> new StartCommand(chatId, bot, commandRequestService);
+                case "/help" -> new HelpCommand(chatId, bot, commandRequestService);
+                case "/track" -> {
+                    String url = messageLink.length == 2 ? messageLink[1] : "";
+                    if (url.isEmpty()) {
+                        throw new NotFoundCommandException("Введите ссылку в команде");
+                    }
+                    yield new TrackCommand(chatId, bot, commandRequestService, url);
+                }
+                case "/untrack" -> {
+                    String url = messageLink.length == 2 ? messageLink[1] : "";
+                    if (url.isEmpty()) {
+                        throw new NotFoundCommandException("Введите ссылку в команде");
+                    }
+                    yield new UntrackCommand(chatId, bot, commandRequestService, url);
+                }
+                case "/list" -> new ListCommand(chatId, bot, commandRequestService);
+                default -> throw new NotFoundCommandException("У бота нет такой команды");
+            };
+        } catch (NotFoundCommandException e) {
+            bot.execute(new SendMessage(chatId, "Нет такой команды"));
+        }
+        return null;
     }
-
-
 }
