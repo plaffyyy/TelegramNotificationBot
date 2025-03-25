@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+
+  updates-db:
+    image: postgres:14.17
+    container_name: updates-db
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 5434:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+
   scrapper:
     env_file:
       - .env
@@ -8,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: scrapper/Dockerfile
+    depends_on:
+      - updates-db
     ports:
       - 8082:8082
     networks:
@@ -21,6 +38,8 @@ services:
       context: .
       dockerfile: bot/Dockerfile
     depends_on:
+      updates-db:
+        condition: service_started
       scrapper:
         condition: service_started
     networks:
@@ -30,3 +49,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  pg_data:
