@@ -9,6 +9,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -48,4 +51,12 @@ public class Link {
     @Convert(converter = JsonConverter.class)
     @Column(columnDefinition = "jsonb")
     private JsonNode update;
+
+    @ManyToMany
+    @JoinTable(
+        name = "chat_link",
+        joinColumns = @JoinColumn(name = "link_id"),
+        inverseJoinColumns = @JoinColumn(name = "chat_id")
+    )
+    private List<Chat> chats;
 }
