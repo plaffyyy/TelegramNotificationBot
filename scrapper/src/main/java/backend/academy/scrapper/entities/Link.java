@@ -30,6 +30,12 @@ import lombok.ToString;
 @ToString
 public class Link {
 
+    public Link(String url, List<String> tags, List<String> filters) {
+        this.url = url;
+        this.tags = tags;
+        this.filters = filters;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

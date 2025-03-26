@@ -7,6 +7,7 @@ import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.repositories.LinkRepository;
 import backend.academy.scrapper.repositories.UpdateRepository;
 import backend.academy.scrapper.services.UpdateRequestService;
+import backend.academy.scrapper.services.data.LinkService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class LinkUpdateChecker {
-    private final LinkRepository linkRepository;
+    private final LinkService linkService;
     private final UpdateRepository updateRepository;
     private final ClientHandler clientHandler;
     private final UpdateRequestService updateRequestService;
@@ -30,7 +31,7 @@ public class LinkUpdateChecker {
     @SneakyThrows
     public void checkForUpdates() {
 
-        Set<Link> links = linkRepository.getAllLinks();
+        Set<Link> links = linkService.getAllLinks();
 
         for (Link link : links) {
             try {
@@ -47,7 +48,7 @@ public class LinkUpdateChecker {
                     updateRepository.addUpdate(link.url(), response);
 
                 } else if (!responseJson.equals(lastUpdateJson)) {
-                    List<Long> ids = linkRepository.getIdsByLink(link);
+                    List<Long> ids = linkService.getIdsByLink(link);
 
                     updateRequestService.sendUpdateToBot(link, ids);
 

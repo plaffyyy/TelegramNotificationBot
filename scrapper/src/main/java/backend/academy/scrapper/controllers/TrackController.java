@@ -8,6 +8,7 @@ import backend.academy.scrapper.repositories.LinkRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import backend.academy.scrapper.services.data.LinkService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/links")
 public final class TrackController {
 
-    @Autowired
-    private final LinkRepository linkRepository;
+    private final LinkService linkService;
 
     @ResponseBody
     @GetMapping
     public ResponseEntity<LinkResponse> getLinks(@RequestHeader("Tg-Chat-Id") String id) {
         Long chatId = Long.valueOf(id);
-        Set<Link> links = linkRepository.getLinksByChatId(chatId);
+        Set<Link> links = linkService.getLinksByChatId(chatId);
 
         LinkResponse linkResponse = new LinkResponse(links, links.size());
 
@@ -52,8 +52,8 @@ public final class TrackController {
 
         Link link = new Link(url, tags, filters);
 
-        linkRepository.addLink(chatId, link);
-        log.info("links by id {}", linkRepository.getLinksByChatId(chatId).toString());
+        linkService.addLink(chatId, link);
+        log.info("links by id {}", linkService.getLinksByChatId(chatId).toString());
 
         TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatId, url, tags, filters);
         return ResponseEntity.ok(trackLinkResponse);
@@ -65,7 +65,7 @@ public final class TrackController {
         long chatId = Long.parseLong(id);
         String url = String.valueOf(request.get("url"));
         try {
-            Link link = linkRepository.removeLinkByUrl(chatId, url);
+            Link link = linkService.removeLinkByUrl(chatId, url);
             if (link == null) {
                 throw new LinkNotFoundException("Ссылка " + url + " не найдена");
             }

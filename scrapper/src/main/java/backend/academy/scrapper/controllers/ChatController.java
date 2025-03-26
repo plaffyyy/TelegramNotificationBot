@@ -1,6 +1,7 @@
 package backend.academy.scrapper.controllers;
 
 import backend.academy.scrapper.repositories.LinkRepository;
+import backend.academy.scrapper.services.data.LinkService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tg-chat")
 public final class ChatController {
 
-    @Autowired
-    private final LinkRepository linkRepository;
+    private final LinkService linkService;
 
     @PostMapping("/{id}")
     public void register(@PathVariable Long id) {
-        linkRepository.createChatById(id);
+        linkService.createChatById(id);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        linkRepository.deleteChatById(id);
+        linkService.deleteChatById(id);
     }
 }
