@@ -3,7 +3,7 @@ package backend.academy.scrapper.controllers;
 import backend.academy.scrapper.dto.LinkResponse;
 import backend.academy.scrapper.dto.TrackLinkResponse;
 import backend.academy.scrapper.exceptions.LinkNotFoundException;
-import backend.academy.scrapper.model.Link;
+import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.repositories.LinkRepository;
 import java.util.List;
 import java.util.Map;

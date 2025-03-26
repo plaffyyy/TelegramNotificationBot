@@ -2,7 +2,7 @@ package backend.academy.scrapper.db_tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import backend.academy.scrapper.model.Link;
+import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.repositories.LinkRepository;
 import java.util.Arrays;
 import java.util.HashMap;

@@ -3,7 +3,7 @@ package backend.academy.scrapper.db_tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import backend.academy.scrapper.model.Link;
+import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.repositories.UpdateRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

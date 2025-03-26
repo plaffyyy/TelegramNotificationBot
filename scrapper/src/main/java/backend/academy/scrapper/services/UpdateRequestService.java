@@ -1,6 +1,6 @@
 package backend.academy.scrapper.services;
 
-import backend.academy.scrapper.model.Link;
+import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.repositories.UpdateRepository;
 import java.util.List;
 import java.util.Map;

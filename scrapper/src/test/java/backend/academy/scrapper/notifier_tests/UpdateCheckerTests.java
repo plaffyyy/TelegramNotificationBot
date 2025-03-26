@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
 import backend.academy.scrapper.clients.GitHubClient;
-import backend.academy.scrapper.model.Link;
+import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.repositories.LinkRepository;
 import backend.academy.scrapper.repositories.UpdateRepository;
 import backend.academy.scrapper.updates.LinkUpdateChecker;

@@ -3,7 +3,7 @@ package backend.academy.scrapper.updates;
 import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
 import backend.academy.scrapper.exceptions.UndefinedUrlException;
-import backend.academy.scrapper.model.Link;
+import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.repositories.LinkRepository;
 import backend.academy.scrapper.repositories.UpdateRepository;
 import backend.academy.scrapper.services.UpdateRequestService;
