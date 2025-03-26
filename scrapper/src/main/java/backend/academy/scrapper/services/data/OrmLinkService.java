@@ -5,18 +5,18 @@ import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.exceptions.ChatNotCreatedException;
 import backend.academy.scrapper.repositories.ChatRepository;
 import backend.academy.scrapper.repositories.LinkRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class OrmLinkService implements LinkService {
+@ConditionalOnProperty(name = "access-type", havingValue = "ORM")
+public class OrmLinkService extends LinkService {
 
     private final LinkRepository linkRepository;
     private final ChatRepository chatRepository;
