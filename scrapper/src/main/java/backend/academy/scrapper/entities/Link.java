@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "links")
+@Table(name = "link")
 @Getter
 @Setter
 @NoArgsConstructor

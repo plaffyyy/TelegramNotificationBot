@@ -4,7 +4,7 @@ app:
     key: ${SO_TOKEN_KEY}
     access-token: ${SO_ACCESS_TOKEN}
 url:
-  updates: "http://bot:8080/updates"
+  updates: "http://bot:8082/updates"
 spring:
   application:
     name: Scrapper
@@ -17,6 +17,7 @@ spring:
 
   liquibase:
     enabled: false
+#    change-log: classpath:/migrations/changelog/master.xml
   jpa:
     hibernate:
       ddl-auto: validate

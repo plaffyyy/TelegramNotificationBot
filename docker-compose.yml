@@ -15,11 +15,36 @@ services:
     networks:
       - app-network
 
+  liquibase-migrations:
+    container_name: migrations
+    image: liquibase/liquibase:4.29
+    depends_on:
+      - updates-db
+    env_file:
+      - .env
+    command:
+      - --searchPath=/changelog
+      - --changelog-file=/changelog/master.xml
+      - --driver=org.postgresql.Driver
+      - --url=jdbc:postgresql://updates-db:5432/${POSTGRES_DB}
+      - --username=${POSTGRES_USER}
+      - --password=${POSTGRES_PASSWORD}
+      - update
+    volumes:
+      - ./migrations:/changelog
+    networks:
+      - app-network
 
   scrapper:
     env_file:
       - .env
-
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://updates-db:5432/${POSTGRES_DB} #FROM .env file
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER} #FROM .env file
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD} #FROM .env file
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_PROFILES_ACTIVE: docker
     build:
       context: .
       dockerfile: scrapper/Dockerfile
@@ -38,10 +63,9 @@ services:
       context: .
       dockerfile: bot/Dockerfile
     depends_on:
-      updates-db:
-        condition: service_started
-      scrapper:
-        condition: service_started
+      - updates-db
+      - scrapper
+
     networks:
       - app-network
 
