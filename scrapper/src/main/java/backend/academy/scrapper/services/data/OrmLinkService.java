@@ -8,6 +8,7 @@ import backend.academy.scrapper.repositories.LinkRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -37,7 +38,9 @@ public class OrmLinkService extends LinkService {
     }
 
     public Set<Link> getLinksByChatId(Long chatId) {
-        return linkRepository.getAllByChats(List.of(new Chat(chatId)));
+        Optional<Chat> chat = chatRepository.findById(chatId);
+        return linkRepository.getAllByChat(chat.orElseThrow(() ->
+            new ChatNotCreatedException("Чат с таким id не существует")));
     }
 
     public void addLink(Long chatId, Link link) {
@@ -49,11 +52,7 @@ public class OrmLinkService extends LinkService {
         //TODO: добавить выброс глобальной ошибки при неправильном
         // или несуществующем chatId
         log.info("Chat: {}", chat);
-        //инициализация чатов для ссылки
-        if (link.chats() == null) {
-            link.chats(new ArrayList<>());
-        }
-        link.chats().add(chat);
+        link.chat(chat);
         log.info("Link for save: {}", link);
         linkRepository.save(link);
     }
@@ -62,20 +61,24 @@ public class OrmLinkService extends LinkService {
 
         List<Link> links = linkRepository.findAllByUrl(url);
         for (Link link : links) {
-            if (link.chats().removeIf(chat -> chat.id().equals(chatId))) {
-                linkRepository.save(link); // Сохраняем обновленную ссылку без этого чата
+            if (link.chat() != null && link.chat().id().equals(chatId)) {
+                linkRepository.delete(link); // Сохраняем обновленную ссылку без этого чата
                 return link;
             }
         }
         return null;
 
-
     }
 
+    /**
+     * Здесь получаем все chatId по url, для того, чтобы им потом уведомление присылать
+     * @param link передаем параметр link, но берем из не url потом
+     * @return List<Long> - лист всех id чатов
+     */
     public List<Long> getIdsByLink(Link link) {
         return linkRepository.findAllByUrl(link.url())
             .stream()
-            .flatMap(l -> l.chats().stream().map(Chat::id))
+            .map(l -> l.chat().id())
             .distinct()
             .collect(Collectors.toList());
     }

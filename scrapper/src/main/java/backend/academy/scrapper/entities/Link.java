@@ -11,7 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -45,24 +45,17 @@ public class Link {
     private String url;
 
     @Convert(converter = StringListConverter.class)
-    @Column(columnDefinition = "jsonb")
     @NotNull
     private List<String> tags;
 
     @Convert(converter = StringListConverter.class)
-    @Column(columnDefinition = "jsonb")
     @NotNull
     private List<String> filters;
 
     @Convert(converter = JsonConverter.class)
-    @Column(columnDefinition = "jsonb")
     private JsonNode update;
-
-    @ManyToMany
-    @JoinTable(
-        name = "chat_link",
-        joinColumns = @JoinColumn(name = "link_id"),
-        inverseJoinColumns = @JoinColumn(name = "chat_id")
-    )
-    private List<Chat> chats;
+    //TODO: в дальнейшем возможно поменять хранение типа в бд на jsonb
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
 }

@@ -13,7 +13,7 @@ import java.util.Set;
 public interface LinkRepository extends JpaRepository<Link, Long> {
 
 
-    Set<Link> getAllByChats(List<Chat> chats);
+    Set<Link> getAllByChat(Chat chat);
 
     List<Link> findAllByUrl(@NotNull String url);
 }
