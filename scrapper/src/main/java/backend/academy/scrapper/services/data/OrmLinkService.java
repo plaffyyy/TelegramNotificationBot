@@ -5,14 +5,17 @@ import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.exceptions.ChatNotCreatedException;
 import backend.academy.scrapper.repositories.ChatRepository;
 import backend.academy.scrapper.repositories.LinkRepository;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 @ConditionalOnProperty(name = "access-type", havingValue = "ORM")
@@ -38,10 +41,20 @@ public class OrmLinkService extends LinkService {
     }
 
     public void addLink(Long chatId, Link link) {
+
+        log.info("In data service layer");
         Chat chat = chatRepository.findById(chatId).orElseThrow(
             () -> new ChatNotCreatedException("Нет чата с таким id")
         );
+        //TODO: добавить выброс глобальной ошибки при неправильном
+        // или несуществующем chatId
+        log.info("Chat: {}", chat);
+        //инициализация чатов для ссылки
+        if (link.chats() == null) {
+            link.chats(new ArrayList<>());
+        }
         link.chats().add(chat);
+        log.info("Link for save: {}", link);
         linkRepository.save(link);
     }
 

@@ -46,14 +46,18 @@ public final class TrackCommand extends Command {
 
     private void addLink() {
 
+        log.info("Link in adding process");
         Map<String, Object> jsonRequest = Map.of(
                 "url", url,
                 "tags", tags,
                 "filters", filters);
 
+        log.info("chatId in trackCommand: {}", chatId);
         ResponseEntity<TrackLinkResponse> response = commandRequestService.trackCommandResponse(jsonRequest, chatId);
 
         int responseCode = response.getStatusCode().value();
+
+        log.info("Response code: {}", responseCode);
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             bot.execute(new SendMessage(chatId, FileWithTextResponses.successfulTrack));

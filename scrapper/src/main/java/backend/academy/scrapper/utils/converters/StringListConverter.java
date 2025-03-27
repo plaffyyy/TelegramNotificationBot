@@ -8,6 +8,10 @@ import jakarta.persistence.Converter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Converter class для того, чтобы в базе данных хранить строку,
+ * сделанную из листа строк. И также парсить в обратную сторону
+ */
 @Converter(autoApply = true)
 public final class StringListConverter implements AttributeConverter<List<String>, String> {
 

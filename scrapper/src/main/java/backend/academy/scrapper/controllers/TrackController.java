@@ -43,14 +43,17 @@ public final class TrackController {
 
     @PostMapping
     public ResponseEntity<TrackLinkResponse> trackLink(
-            @RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
-        Long chatId = Long.valueOf(id);
+            @RequestHeader("Tg-Chat-Id") Long chatId, @RequestBody Map<String, Object> request) {
+        log.info("Just log for check that controller get this");
+
         String url = String.valueOf(request.get("url"));
 
         List<String> tags = (List<String>) request.getOrDefault("tags", List.of());
         List<String> filters = (List<String>) request.getOrDefault("filters", List.of());
 
         Link link = new Link(url, tags, filters);
+
+        log.info("Link for adding: {} and chatId: {}", link, chatId);
 
         linkService.addLink(chatId, link);
         log.info("links by id {}", linkService.getLinksByChatId(chatId).toString());

@@ -3,6 +3,7 @@ package backend.academy.bot.services;
 import backend.academy.bot.dto.LinkResponse;
 import backend.academy.bot.dto.TrackLinkResponse;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 public final class CommandRequestService {
     private final String urlForApi;
@@ -27,6 +29,8 @@ public final class CommandRequestService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public ResponseEntity<TrackLinkResponse> trackCommandResponse(Map<String, Object> jsonRequest, Long chatId) {
+        log.info("urlForApi: {}", urlForApi);
+        log.info("chatId in sender: {}", chatId);
         return restClient
                 .post()
                 .uri(urlForApi)
