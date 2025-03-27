@@ -18,18 +18,21 @@ public final class StartCommand extends Command {
 
     @Override
     public void execute() {
+        try {
+            bot.execute(new SendMessage(chatId, FileWithTextResponses.firstWords));
+            bot.execute(new SendMessage(chatId, FileWithTextResponses.startInformation));
 
-        bot.execute(new SendMessage(chatId, FileWithTextResponses.firstWords));
-        bot.execute(new SendMessage(chatId, FileWithTextResponses.startInformation));
+            ResponseEntity<Void> response = commandRequestService.startCommandResponse(chatId);
 
-        ResponseEntity<Void> response = commandRequestService.startCommandResponse(chatId);
+            int responseCode = response.getStatusCode().value();
 
-        int responseCode = response.getStatusCode().value();
-
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            bot.execute(new SendMessage(chatId, FileWithTextResponses.successfulStart));
-        } else {
-            bot.execute(new SendMessage(chatId, FileWithTextResponses.errorStart));
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                bot.execute(new SendMessage(chatId, FileWithTextResponses.successfulStart));
+            } else {
+                bot.execute(new SendMessage(chatId, FileWithTextResponses.errorStart));
+            }
+        } catch (Exception e) {
+            return;
         }
     }
 }
