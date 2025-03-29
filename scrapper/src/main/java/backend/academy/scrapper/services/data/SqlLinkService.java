@@ -6,6 +6,7 @@ import backend.academy.scrapper.utils.converters.StringListConverter;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +128,33 @@ public class SqlLinkService extends LinkService {
             new BeanPropertyRowMapper<>(Long.class)
         );
     }
+
+
+    @Override
+    public JsonNode getUpdate(String url) {
+        return jdbcTemplate.query(
+            """
+                SELECT update FROM link WHERE url=?
+            """,
+            new Object[]{url},
+            (rs, rowNum) -> jsonConverter.convertToEntityAttribute(rs.getString("update"))
+        ).stream().findFirst().orElse(null);
+    }
+
+    @Override
+    public void changeUpdate(String url, JsonNode update) {
+        jdbcTemplate.update(
+            """
+                UPDATE link SET update=?
+                WHERE url=?
+            """,
+            jsonConverter.convertToDatabaseColumn(update),
+            url
+        );
+    }
+
+
+
     /**
      *
      * Преобразование в объекты Link из SQL кода
@@ -142,4 +170,5 @@ public class SqlLinkService extends LinkService {
             return l;
         };
     }
+
 }

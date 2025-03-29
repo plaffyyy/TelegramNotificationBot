@@ -51,6 +51,7 @@ public class Link {
     @NotNull
     private List<String> filters;
 
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverter.class)
     private JsonNode update;
     //TODO: в дальнейшем возможно поменять хранение типа в бд на jsonb

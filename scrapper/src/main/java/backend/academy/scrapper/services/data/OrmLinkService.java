@@ -43,14 +43,15 @@ public class OrmLinkService extends LinkService {
             new ChatNotCreatedException("Чат с таким id не существует")));
     }
 
+    //TODO: добавить выброс глобальной ошибки при неправильном
+    // или несуществующем chatId
     public void addLink(Long chatId, Link link) {
 
         log.info("In data service layer");
         Chat chat = chatRepository.findById(chatId).orElseThrow(
             () -> new ChatNotCreatedException("Нет чата с таким id")
         );
-        //TODO: добавить выброс глобальной ошибки при неправильном
-        // или несуществующем chatId
+
         log.info("Chat: {}", chat);
         link.chat(chat);
         log.info("Link for save: {}", link);

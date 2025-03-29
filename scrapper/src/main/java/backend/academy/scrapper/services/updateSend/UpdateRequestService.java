@@ -31,6 +31,6 @@ public class UpdateRequestService implements SendNotification {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(jsonRequest)
                 .retrieve()
-                .toEntity(UpdateRepository.class);
+                .toEntity(Void.class);
     }
 }
