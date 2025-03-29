@@ -24,7 +24,7 @@ public final class ListCommand extends Command {
             bot.execute(new SendMessage(chatId, FileWithTextResponses.listWords));
 
             ResponseEntity<LinkResponse> response = commandRequestService.listCommandResponse(chatId);
-
+            log.info("Response for list operation: {}", response);
             int responseCode = response.getStatusCode().value();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 LinkResponse linkResponse = response.getBody();
@@ -32,6 +32,8 @@ public final class ListCommand extends Command {
                     bot.execute(new SendMessage(chatId, "Нет отслеживаемых ссылок."));
                     return;
                 }
+                log.info("Links in list: {}", linkResponse.links());
+                log.info("Link url: {}", linkResponse.links().iterator().next().url());
                 bot.execute(new SendMessage(chatId, formatingLinks(linkResponse)));
             } else {
                 bot.execute(new SendMessage(chatId, FileWithTextResponses.errorList));
