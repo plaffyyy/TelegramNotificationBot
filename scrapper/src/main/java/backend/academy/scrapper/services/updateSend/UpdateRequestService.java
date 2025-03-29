@@ -20,7 +20,7 @@ public class UpdateRequestService implements SendNotification {
     private final Random random = new Random();
     private final String botUpdates;
 
-    public void sendUpdateToBot(Link link, List<Long> ids) {
+    public void sendUpdateToBot(Link link, List<Long> ids, String description) {
 
         Map<String, Object> jsonRequest = Map.of(
                 "id", random.nextLong(), "url", link.url(), "description", "empty description", "tgChatIds", ids);

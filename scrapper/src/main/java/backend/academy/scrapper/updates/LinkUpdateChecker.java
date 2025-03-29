@@ -4,6 +4,9 @@ import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
 import backend.academy.scrapper.exceptions.UndefinedUrlException;
 import backend.academy.scrapper.entities.Link;
+import backend.academy.scrapper.services.updateParser.ParserHandler;
+import backend.academy.scrapper.services.updateParser.UpdateParser;
+import backend.academy.scrapper.services.updateSend.SendNotification;
 import backend.academy.scrapper.services.updateSend.UpdateRequestService;
 import backend.academy.scrapper.services.data.LinkService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class LinkUpdateChecker {
     private final LinkService linkService;
     private final ClientHandler clientHandler;
-    private final UpdateRequestService updateRequestService;
+    private final SendNotification sendNotification;
 
     @SneakyThrows
     public void checkForUpdates() {
@@ -48,7 +51,10 @@ public class LinkUpdateChecker {
                 } else if (!responseJson.equals(lastUpdateJson)) {
                     List<Long> ids = linkService.getIdsByLink(link);
 
-                    updateRequestService.sendUpdateToBot(link, ids);
+                    UpdateParser updateParser = new ParserHandler().handleClients(link.url());
+                    String description = updateParser.parse(response, lastUpdate);
+
+                    sendNotification.sendUpdateToBot(link, ids, description);
 
                     linkService.changeUpdate(link.url(), response);
                 }
