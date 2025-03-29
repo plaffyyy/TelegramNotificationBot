@@ -1,7 +1,6 @@
 package backend.academy.scrapper.services.updateSend;
 
 import backend.academy.scrapper.entities.Link;
-import backend.academy.scrapper.repositories.UpdateRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;

@@ -4,7 +4,6 @@ import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
 import backend.academy.scrapper.exceptions.UndefinedUrlException;
 import backend.academy.scrapper.entities.Link;
-import backend.academy.scrapper.repositories.UpdateRepository;
 import backend.academy.scrapper.services.updateSend.UpdateRequestService;
 import backend.academy.scrapper.services.data.LinkService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class LinkUpdateChecker {
     private final LinkService linkService;
-    private final UpdateRepository updateRepository;
     private final ClientHandler clientHandler;
     private final UpdateRequestService updateRequestService;
 
@@ -37,21 +35,22 @@ public class LinkUpdateChecker {
                 Client client = clientHandler.handleClients(link.url());
                 JsonNode response = client.getApi(link.url());
                 if (response == null) continue;
-                JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());
+                JsonNode lastUpdate = linkService.getUpdate(link.url());
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 String responseJson = objectMapper.writeValueAsString(response);
                 String lastUpdateJson = objectMapper.writeValueAsString(lastUpdate);
-
+                //изменение когда ссылка только была добавлена
+                // и еще нет обновлений
                 if (lastUpdate == null) {
-                    updateRepository.addUpdate(link.url(), response);
+                    linkService.changeUpdate(link.url(), response);
 
                 } else if (!responseJson.equals(lastUpdateJson)) {
                     List<Long> ids = linkService.getIdsByLink(link);
 
                     updateRequestService.sendUpdateToBot(link, ids);
 
-                    updateRepository.changeUpdate(link.url(), response);
+                    linkService.changeUpdate(link.url(), response);
                 }
             } catch (UndefinedUrlException e) {
                 log.error("Ошибка в LinkUpdateChecker: {}", e.getMessage());

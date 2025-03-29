@@ -1,6 +1,7 @@
 package backend.academy.scrapper.services.data;
 
 import backend.academy.scrapper.entities.Link;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Set;
 
@@ -15,4 +16,6 @@ public abstract class LinkService {
     public abstract Link removeLinkByUrl(long chatId, String url);
     public abstract List<Long> getIdsByLink(Link link);
 
+    public abstract JsonNode getUpdate(String url);
+    public abstract void changeUpdate(String url, JsonNode update);
 }

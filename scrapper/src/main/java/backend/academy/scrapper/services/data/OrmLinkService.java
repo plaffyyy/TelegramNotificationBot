@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -81,5 +82,24 @@ public class OrmLinkService extends LinkService {
             .distinct()
             .collect(Collectors.toList());
     }
+
+    @Override
+    public JsonNode getUpdate(String url) {
+        return linkRepository.findAllByUrl(url)
+            .stream()
+            .findFirst()
+            .map(Link::update)
+            .orElse(null);
+    }
+
+    @Override
+    public void changeUpdate(String url, JsonNode update) {
+        linkRepository.findAllByUrl(url)
+            .forEach(link -> {
+                link.update(update);
+                linkRepository.save(link);
+            });
+    }
+
 
 }
