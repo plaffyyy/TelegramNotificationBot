@@ -3,6 +3,7 @@ package backend.academy.scrapper.clients;
 import backend.academy.scrapper.services.ClientRequestService;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public non-sealed class GitHubClient extends Client {
 
-    private String gitHubToken;
 
+    @Autowired
     public GitHubClient(String gitHubToken, ClientRequestService clientRequestService) {
         super(gitHubToken, clientRequestService);
     }

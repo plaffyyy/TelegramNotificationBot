@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public final class ClientHandler {
 
     private final String gitHubToken;
+    private final String soToken;
     private final ClientRequestService clientRequestService;
 
     public Client handleClients(String url) {
@@ -17,7 +18,7 @@ public final class ClientHandler {
         if (url.contains("git")) {
             return new GitHubClient(gitHubToken, clientRequestService);
         } else if (url.contains("stack")) {
-            return new StackOverflowClient(clientRequestService);
+            return new StackOverflowClient(clientRequestService, soToken);
         } else {
             throw new UndefinedUrlException("Incorrect link");
         }

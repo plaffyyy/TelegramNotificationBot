@@ -1,15 +1,19 @@
 package backend.academy.scrapper.services.data;
 
 import backend.academy.scrapper.entities.Link;
+import backend.academy.scrapper.utils.converters.JsonConverter;
+import backend.academy.scrapper.utils.converters.StringListConverter;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -17,18 +21,26 @@ import java.util.stream.Collectors;
 public class SqlLinkService extends LinkService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final StringListConverter stringListConverter = new StringListConverter();
+    private final JsonConverter jsonConverter = new JsonConverter();
 
     @Autowired
     public SqlLinkService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Получение всех ссылок из базы данных
+     * их преобразование в объекты Link
+     * @return все ссылки
+     */
     @Override
     public Set<Link> getAllLinks() {
-        return jdbcTemplate.query(
+        Set<Link> links = jdbcTemplate.query(
             "SELECT url, tags, filters, update FROM link",
-            new BeanPropertyRowMapper<>(Link.class)
-        ).stream().collect(Collectors.toSet());
+            getLinkRowMapper()).stream().collect(Collectors.toSet());
+        log.info("Links in service: {}", links);
+        return links;
     }
 
     @Override
@@ -58,7 +70,7 @@ public class SqlLinkService extends LinkService {
                 FROM link WHERE chat_id=?
             """,
             new Object[]{chatId},
-            new BeanPropertyRowMapper<>(Link.class)
+            getLinkRowMapper()
         ).stream().collect(Collectors.toSet());
     }
 
@@ -70,8 +82,10 @@ public class SqlLinkService extends LinkService {
             INSERT INTO link(url, tags, filters, update, chat_id)
             VALUES (?,?,?,null,?)
             """,
-            link.url(), String.join(", ", link.tags()),
-            String.join(", ", link.filters()), chatId
+            link.url(),
+            stringListConverter.convertToDatabaseColumn(link.tags()),
+            stringListConverter.convertToDatabaseColumn(link.filters()),
+            chatId
         );
     }
 
@@ -89,7 +103,7 @@ public class SqlLinkService extends LinkService {
                 FROM link WHERE url=? and chat_id=?
             """,
             new Object[]{url, chatId},
-            new BeanPropertyRowMapper<>(Link.class)
+            getLinkRowMapper()
         ).stream().findAny().orElse(null);
         jdbcTemplate.update(
                 """
@@ -99,6 +113,7 @@ public class SqlLinkService extends LinkService {
         );
         return link;
     }
+
 
     @Override
     public List<Long> getIdsByLink(Link link) {
@@ -111,5 +126,20 @@ public class SqlLinkService extends LinkService {
             new Object[]{link.url()},
             new BeanPropertyRowMapper<>(Long.class)
         );
+    }
+    /**
+     *
+     * Преобразование в объекты Link из SQL кода
+     * @return RowMapper<Link> который содержит маппер этой ссылки
+     */
+    private @NotNull RowMapper<Link> getLinkRowMapper() {
+        return (rs, rowNum) -> {
+            Link l = new Link();
+            l.url(rs.getString("url"));
+            l.tags(stringListConverter.convertToEntityAttribute(rs.getString("tags")));
+            l.filters(stringListConverter.convertToEntityAttribute(rs.getString("filters")));
+            l.update(jsonConverter.convertToEntityAttribute(rs.getString("update")));
+            return l;
+        };
     }
 }

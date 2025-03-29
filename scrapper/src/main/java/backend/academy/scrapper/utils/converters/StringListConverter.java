@@ -29,7 +29,7 @@ public final class StringListConverter implements AttributeConverter<List<String
     @Override
     public List<String> convertToEntityAttribute(String json) {
         try {
-            return (json != null) ? objectMapper.readValue(json, List.class) : null;
+            return (json != null && !json.isEmpty()) ? objectMapper.readValue(json, List.class) : List.of();
         } catch (IOException e) {
             throw new RuntimeException("Ошибка десериализации JSON в List<String>", e);
         }

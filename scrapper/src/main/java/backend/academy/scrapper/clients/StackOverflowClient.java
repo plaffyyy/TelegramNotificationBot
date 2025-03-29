@@ -5,6 +5,7 @@ import backend.academy.scrapper.services.ClientRequestService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 
@@ -12,8 +13,9 @@ import org.springframework.web.client.RestClientException;
 @Component
 public non-sealed class StackOverflowClient extends Client {
 
-    public StackOverflowClient(ClientRequestService clientRequestService) {
-        super("", clientRequestService);
+    @Autowired
+    public StackOverflowClient(ClientRequestService clientRequestService, String soToken) {
+        super(soToken, clientRequestService);
     }
 
     @Override
