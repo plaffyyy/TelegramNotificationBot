@@ -64,8 +64,12 @@ public final class NotifierBot {
 
                 CommandHandler commandHandler = new CommandHandler(bot, chatId, text, commandRequestService);
                 Command command = commandHandler.getCommandFromUpdate();
-                if (command != null) {
-                    command.execute();
+                try {
+                    if (command != null) {
+                        command.execute();
+                    }
+                } catch (Exception e) {
+                    return UpdatesListener.CONFIRMED_UPDATES_NONE;
                 }
             }
 

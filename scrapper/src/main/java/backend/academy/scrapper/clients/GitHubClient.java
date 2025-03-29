@@ -14,7 +14,7 @@ public non-sealed class GitHubClient extends Client {
 
     @Autowired
     public GitHubClient(String gitHubToken, ClientRequestService clientRequestService) {
-        super(gitHubToken, clientRequestService);
+        super(clientRequestService, gitHubToken);
     }
 
     @Override
