@@ -1,4 +1,4 @@
-package backend.academy.scrapper.services;
+package backend.academy.scrapper.services.updateSend;
 
 import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.repositories.UpdateRepository;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class UpdateRequestService {
+public class UpdateRequestService implements SendNotification {
 
     public UpdateRequestService(@Value("${url.updates}") String botUpdates) {
         this.botUpdates = botUpdates;

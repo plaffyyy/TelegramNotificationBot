@@ -5,7 +5,6 @@ import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.exceptions.ChatNotCreatedException;
 import backend.academy.scrapper.repositories.ChatRepository;
 import backend.academy.scrapper.repositories.LinkRepository;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;

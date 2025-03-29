@@ -4,9 +4,8 @@ import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
 import backend.academy.scrapper.exceptions.UndefinedUrlException;
 import backend.academy.scrapper.entities.Link;
-import backend.academy.scrapper.repositories.LinkRepository;
 import backend.academy.scrapper.repositories.UpdateRepository;
-import backend.academy.scrapper.services.UpdateRequestService;
+import backend.academy.scrapper.services.updateSend.UpdateRequestService;
 import backend.academy.scrapper.services.data.LinkService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,11 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Getter
-@Component
+@Service
 @AllArgsConstructor
 public class LinkUpdateChecker {
     private final LinkService linkService;
