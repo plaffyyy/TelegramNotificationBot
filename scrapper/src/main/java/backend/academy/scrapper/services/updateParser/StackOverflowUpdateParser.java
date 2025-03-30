@@ -3,9 +3,6 @@ package backend.academy.scrapper.services.updateParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.NoArgsConstructor;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor
 public final class StackOverflowUpdateParser extends UpdateParser {
@@ -16,24 +13,27 @@ public final class StackOverflowUpdateParser extends UpdateParser {
         JsonNode lastAnswers = lastUpdate.get("answers");
         // я беру вариант только с добавлением, поэтому только знак >
         if (newAnswers.size() > lastAnswers.size()) {
-            JsonNode newAnswer = newAnswers.get(0);
-            createDescription(result, newAnswer);
+            ObjectNode newAnswer = (ObjectNode) newAnswers.get(0);
+            createDescription(result, newAnswer, "ответ");
         }
 
         JsonNode newQuestions = response.get("questions");
         JsonNode lastQuestions = lastUpdate.get("questions");
         if (newQuestions.size() > lastQuestions.size()) {
-            JsonNode newQuestion = newQuestions.get(0);
-            createDescription(result, newQuestion);
+            ObjectNode newQuestion = (ObjectNode) newQuestions.get(0);
+            createDescription(result, newQuestion, "вопрос");
         }
         return result.toString();
     }
 
-    private void createDescription(StringBuilder result, JsonNode newField) {
-        result.append("Новый ответ в вопросе: ").append(newField.get("title").asText()).append("\n")
-            .append("Пользователь: ").append(newField.get("owner").get("display_name").asText()).append("\n")
-            .append("Время создания: ").append(parseTime(newField.get("creation_date").asLong())).append("\n")
-            .append("Превью описания: ").append(newField.get("body").asText().substring(0, 200)).append("\n");
+    private void createDescription(StringBuilder result, ObjectNode newField, String type) {
+        result.append("Новый ").append(type).append(": ").append(getSafeText(newField, "title")).append("\n")
+            .append("Пользователь: ").append(getSafeText(newField.path("owner"), "display_name")).append("\n")
+            .append("Время создания: ").append(parseTime(newField.path("creation_date").asLong())).append("\n")
+            .append("Превью описания: ").append(getSafeText(newField, "body").substring(0, 200)).append("\n");
     }
-
+    private String getSafeText(JsonNode node, String fieldName) {
+        JsonNode field = node.get(fieldName);
+        return field != null ? field.asText() : "";
+    }
 }
