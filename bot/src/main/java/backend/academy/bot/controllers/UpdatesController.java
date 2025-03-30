@@ -23,9 +23,12 @@ public class UpdatesController {
     public ResponseEntity<Void> postUpdate(@RequestBody Map<String, Object> request) {
         List<Long> ids = (List<Long>) request.getOrDefault("tgChatIds", List.of());
         String url = (String) request.get("url");
+        String description = (String) request.get("description");
 
-        String message = "📢 Уведомление!\nНовое обновление в ссылке : " + url;
-        notifier.notifyUsers(ids, message);
+        StringBuilder message = new StringBuilder();
+        message.append("📢 Уведомление!\nНовое обновление в ссылке: ").append(url).append("\n");
+        message.append(description);
+        notifier.notifyUsers(ids, message.toString());
 
         return ResponseEntity.ok(null);
     }

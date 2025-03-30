@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Set;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -52,7 +53,7 @@ public class LinkUpdateChecker {
                     List<Long> ids = linkService.getIdsByLink(link);
 
                     UpdateParser updateParser = new ParserHandler().handleClients(link.url());
-                    String description = updateParser.parse(response, lastUpdate);
+                    String description = updateParser.parse((ObjectNode) response, (ObjectNode) lastUpdate);
 
                     sendNotification.sendUpdateToBot(link, ids, description);
 
