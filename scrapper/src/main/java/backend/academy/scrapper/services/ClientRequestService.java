@@ -9,8 +9,13 @@ public final class ClientRequestService {
 
     private final RestClient restClient = RestClient.builder().build();
 
-    public String stackOverflowResponse(String apiLink) {
-        return restClient.get().uri(apiLink).retrieve().body(String.class);
+    public String stackOverflowResponse(String apiLink, String stackOverflowToken) {
+        return restClient
+            .get()
+            .uri(apiLink)
+            .header("X-API-Access-key", stackOverflowToken)
+            .retrieve()
+            .body(String.class);
     }
 
     public ResponseEntity<String> gitHubResponse(String apiLink, String gitHubToken) {
