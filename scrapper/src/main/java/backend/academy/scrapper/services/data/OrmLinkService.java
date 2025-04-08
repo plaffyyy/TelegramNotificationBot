@@ -15,10 +15,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 @ConditionalOnProperty(name = "access-type", havingValue = "ORM")
 public class OrmLinkService extends LinkService {
 
@@ -29,12 +31,16 @@ public class OrmLinkService extends LinkService {
         return new HashSet<>(linkRepository.findAll());
     }
 
+    @Transactional
     public void createChatById(Long id) {
         chatRepository.save(new Chat(id));
+        chatRepository.flush();
     }
 
+    @Transactional
     public void deleteChatById(Long id) {
         chatRepository.deleteById(id);
+        chatRepository.flush();
     }
 
     /**
@@ -53,6 +59,7 @@ public class OrmLinkService extends LinkService {
 
     //TODO: добавить выброс глобальной ошибки при неправильном
     // или несуществующем chatId
+    @Transactional
     public void addLink(Long chatId, Link link) {
 
         log.info("In data service layer");
@@ -64,14 +71,17 @@ public class OrmLinkService extends LinkService {
         link.chat(chat);
         log.info("Link for save: {}", link);
         linkRepository.save(link);
+        linkRepository.flush();
     }
 
+    @Transactional
     public Link removeLinkByUrl(long chatId, String url) {
 
         List<Link> links = linkRepository.findAllByUrl(url);
         for (Link link : links) {
             if (link.chat() != null && link.chat().id().equals(chatId)) {
                 linkRepository.delete(link); // Сохраняем обновленную ссылку без этого чата
+                linkRepository.flush();
                 return link;
             }
         }
@@ -101,12 +111,14 @@ public class OrmLinkService extends LinkService {
             .orElse(null);
     }
 
+    @Transactional
     @Override
     public void changeUpdate(String url, JsonNode update) {
         linkRepository.findAllByUrl(url)
             .forEach(link -> {
                 link.update(update);
                 linkRepository.save(link);
+                linkRepository.flush();
             });
     }
 
