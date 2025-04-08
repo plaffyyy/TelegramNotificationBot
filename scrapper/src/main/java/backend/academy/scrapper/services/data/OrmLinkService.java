@@ -37,6 +37,14 @@ public class OrmLinkService extends LinkService {
         chatRepository.deleteById(id);
     }
 
+    /**
+     * Получение всех чатов из базы данных для теста
+     * @return количество чатов
+     */
+    public long getAllChats() {
+        return chatRepository.count();
+    }
+
     public Set<Link> getLinksByChatId(Long chatId) {
         Optional<Chat> chat = chatRepository.findById(chatId);
         return linkRepository.getAllByChat(chat.orElseThrow(() ->
