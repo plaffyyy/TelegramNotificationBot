@@ -30,7 +30,7 @@ public final class StackOverflowUpdateParser extends UpdateParser {
         result.append("Новый ").append(type).append(": ").append(getSafeText(newField, "title")).append("\n")
             .append("Пользователь: ").append(getSafeText(newField.path("owner"), "display_name")).append("\n")
             .append("Время создания: ").append(parseTime(newField.path("creation_date").asLong())).append("\n")
-            .append("Превью описания: ").append(getSafeText(newField, "body").substring(0, 200)).append("\n");
+            .append("Превью описания: ").append(getSafeText(newField, "body").substring(0, Math.min(200, newField.get("body").asText().length()))).append("\n");
     }
     private String getSafeText(JsonNode node, String fieldName) {
         JsonNode field = node.get(fieldName);
