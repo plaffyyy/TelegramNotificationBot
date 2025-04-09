@@ -53,6 +53,7 @@ public class SqlLinkServiceTests extends DbConfigTest {
         count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM chat WHERE id = ?", Integer.class, 1L);
         assertNotNull(count);
         assertEquals(0, count);
+        sqlLinkService.deleteChatById(2L);
     }
 
     @DisplayName("Проверка, что корректно добавляется и удаляется ссылка, а также верно отображаются фильтры")
@@ -76,6 +77,7 @@ public class SqlLinkServiceTests extends DbConfigTest {
         links = sqlLinkService.getLinksByChatId(chat.id());
         assertNotNull(links);
         assertEquals(0, links.size());
+        sqlLinkService.deleteChatById(chat.id());
     }
 
     @DisplayName("Проверка, что корректно отображаются ссылки по тегу")
@@ -107,5 +109,8 @@ public class SqlLinkServiceTests extends DbConfigTest {
         Set<Link> linksByFirstTag = sqlLinkService.getLinksByChatIdAndTag(chat.id(), firstTag);
         assertEquals(1, linksByFirstTag.size());
         assertEquals(link1.url(), linksByFirstTag.iterator().next().url());
+        sqlLinkService.removeLinkByUrl(chat.id(), link1.url());
+        sqlLinkService.removeLinkByUrl(chat.id(), link2.url());
+        sqlLinkService.deleteChatById(chat.id());
     }
 }

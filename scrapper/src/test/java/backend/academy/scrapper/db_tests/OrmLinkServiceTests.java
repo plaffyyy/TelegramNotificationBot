@@ -39,6 +39,8 @@ public class OrmLinkServiceTests extends DbConfigTest {
         ormLinkService.deleteChatById(1L);
         chatCount = ormLinkService.getAllChats();
         assertEquals(1, chatCount);
+        ormLinkService.deleteChatById(2L);
+
     }
 
     @DisplayName("Проверка, что корректно добавляется и удаляется ссылка, а также верно отображаются фильтры")
@@ -67,6 +69,7 @@ public class OrmLinkServiceTests extends DbConfigTest {
         links = ormLinkService.getLinksByChatId(chat.id());
         assertNotNull(links);
         assertEquals(0, links.size());
+        ormLinkService.deleteChatById(chat.id());
     }
 
     @DisplayName("Проверка, что корректно отображаются ссылки по тегу")
@@ -98,5 +101,8 @@ public class OrmLinkServiceTests extends DbConfigTest {
         Set<Link> linksByFirstTag = ormLinkService.getLinksByChatIdAndTag(chat.id(), firstTag);
         assertEquals(1, linksByFirstTag.size());
         assertEquals(link1.url(), linksByFirstTag.iterator().next().url());
+        ormLinkService.removeLinkByUrl(chat.id(), link1.url());
+        ormLinkService.removeLinkByUrl(chat.id(), link2.url());
+        ormLinkService.deleteChatById(chat.id());
     }
 }
