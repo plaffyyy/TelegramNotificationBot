@@ -65,5 +65,26 @@ public class OrmLinkServiceTests extends DbConfigTest {
 
     }
 
+    @DisplayName("Проверка, что корректно отображаются ссылки по тегу")
+    @Test
+    public void getLinksByTag() {
+
+        Chat chat = new Chat(1L);
+        String firstTag = "first-tag";
+        String secondTag = "second-tag";
+        Link link1 = new Link(null, "https://github.com/plaffyyy/SpringMVCLearn1",
+            List.of(firstTag, secondTag), List.of("first", "second"), null, chat);
+        Link link2 = new Link(null, "https://github.com/plaffyyy/SpringMVCLearn2",
+            List.of(secondTag), List.of("first", "second"), null, chat);
+
+        ormLinkService.createChatById(chat.id());
+        ormLinkService.addLink(chat.id(), link1);
+        ormLinkService.addLink(chat.id(), link2);
+
+        Set<Link> linksByFirstTag = ormLinkService.getLinksByChatIdAndTag(chat.id(), firstTag);
+        assertEquals(1, linksByFirstTag.size());
+        assertEquals(link1.url(), linksByFirstTag.iterator().next().url());
+
+    }
 
 }

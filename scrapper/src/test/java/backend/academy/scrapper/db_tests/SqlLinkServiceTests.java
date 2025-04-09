@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 @Slf4j
 @SpringBootTest
 @TestPropertySource(properties = {
@@ -81,6 +80,28 @@ public class SqlLinkServiceTests extends DbConfigTest {
         assertNotNull(links);
         assertEquals(0, links.size());
 
+
+    }
+
+    @DisplayName("Проверка, что корректно отображаются ссылки по тегу")
+    @Test
+    public void getLinksByTag() {
+
+        Chat chat = new Chat(1L);
+        String firstTag = "first-tag";
+        String secondTag = "second-tag";
+        Link link1 = new Link(1L, "https://github.com/plaffyyy/SpringMVCLearn1",
+            List.of(firstTag, secondTag), List.of("first", "second"), null, chat);
+        Link link2 = new Link(2L, "https://github.com/plaffyyy/SpringMVCLearn2",
+            List.of(secondTag), List.of("first", "second"), null, chat);
+
+        sqlLinkService.createChatById(chat.id());
+        sqlLinkService.addLink(chat.id(), link1);
+        sqlLinkService.addLink(chat.id(), link2);
+
+        Set<Link> linksByFirstTag = sqlLinkService.getLinksByChatIdAndTag(chat.id(), firstTag);
+        assertEquals(1, linksByFirstTag.size());
+        assertEquals(link1.url(), linksByFirstTag.iterator().next().url());
 
     }
 
