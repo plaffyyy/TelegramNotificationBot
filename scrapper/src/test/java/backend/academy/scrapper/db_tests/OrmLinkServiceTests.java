@@ -40,7 +40,6 @@ public class OrmLinkServiceTests extends DbConfigTest {
         chatCount = ormLinkService.getAllChats();
         assertEquals(1, chatCount);
         ormLinkService.deleteChatById(2L);
-
     }
 
     @DisplayName("Проверка, что корректно добавляется и удаляется ссылка, а также верно отображаются фильтры")
