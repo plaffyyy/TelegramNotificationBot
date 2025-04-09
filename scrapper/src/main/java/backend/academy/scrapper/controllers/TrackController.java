@@ -37,9 +37,14 @@ public final class TrackController {
      */
     @ResponseBody
     @GetMapping
-    public ResponseEntity<LinkResponse> getLinks(@RequestHeader("Tg-Chat-Id") String id) {
+    public ResponseEntity<LinkResponse> getLinks(@RequestHeader("Tg-Chat-Id") String id, @RequestHeader("tag") String tag) {
         Long chatId = Long.valueOf(id);
-        Set<Link> links = linkService.getLinksByChatId(chatId);
+        Set<Link> links;
+        if (tag.equals("")) {
+            links = linkService.getLinksByChatId(chatId);
+        } else {
+            links = linkService.getLinksByChatIdAndTag(chatId, tag);
+        }
         log.info("Links by id in controller {}: {}", chatId, links);
         Set<backend.academy.scrapper.model.Link> linksForResponse = links.stream()
             .map(link -> new backend.academy.scrapper.model.Link(link.id(), link.url(),

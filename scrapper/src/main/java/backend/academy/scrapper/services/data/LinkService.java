@@ -12,6 +12,7 @@ public abstract class LinkService {
     public abstract void createChatById(Long id);
     public abstract void deleteChatById(Long id);
     public abstract Set<Link> getLinksByChatId(Long chatId);
+    public abstract Set<Link> getLinksByChatIdAndTag(Long chatId, String tag);
     public abstract void addLink(Long chatId, Link link);
     public abstract Link removeLinkByUrl(long chatId, String url);
     public abstract List<Long> getIdsByLink(Link link);

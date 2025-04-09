@@ -14,16 +14,16 @@ import org.springframework.web.client.HttpClientErrorException;
 @Slf4j
 public final class ListCommand extends Command {
 
-    public ListCommand(long chatId, TelegramBot bot, CommandRequestService commandRequestService) {
-        super(commandRequestService, chatId, bot, "");
+    public ListCommand(long chatId, TelegramBot bot, CommandRequestService commandRequestService, String tag) {
+        super(commandRequestService, chatId, bot, tag);
     }
 
     @Override
     public void execute() {
         try {
             bot.execute(new SendMessage(chatId, FileWithTextResponses.listWords));
-
-            ResponseEntity<LinkResponse> response = commandRequestService.listCommandResponse(chatId);
+            //url is a tag
+            ResponseEntity<LinkResponse> response = commandRequestService.listCommandResponse(chatId, url);
             log.info("Response for list operation: {}", response);
             int responseCode = response.getStatusCode().value();
             if (responseCode == HttpURLConnection.HTTP_OK) {

@@ -41,11 +41,12 @@ public final class CommandRequestService {
                 .toEntity(TrackLinkResponse.class);
     }
 
-    public ResponseEntity<LinkResponse> listCommandResponse(Long chatId) {
+    public ResponseEntity<LinkResponse> listCommandResponse(Long chatId, String tag) {
         return restClient
                 .get()
                 .uri(urlForApi)
                 .header("Tg-Chat-Id", String.valueOf(chatId))
+                .header("tag", tag)
                 .retrieve()
                 .toEntity(LinkResponse.class);
     }

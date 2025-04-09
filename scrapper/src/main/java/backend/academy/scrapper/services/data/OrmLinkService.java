@@ -57,6 +57,19 @@ public class OrmLinkService extends LinkService {
             new ChatNotCreatedException("Чат с таким id не существует")));
     }
 
+    @Override
+    public Set<Link> getLinksByChatIdAndTag(Long chatId, String tag) {
+        Optional<Chat> chat = chatRepository.findById(chatId);
+        if (chat.isEmpty()) {
+            throw new ChatNotCreatedException("Чат с таким id не существует");
+        }
+
+        return linkRepository.getAllByChat(chat.get()).stream()
+            .filter(link -> link.tags().contains(tag))
+            .collect(Collectors.toSet());
+    }
+
+
     //TODO: добавить выброс глобальной ошибки при неправильном
     // или несуществующем chatId
     @Transactional

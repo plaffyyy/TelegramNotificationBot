@@ -75,6 +75,28 @@ public class SqlLinkService extends LinkService {
         ).stream().collect(Collectors.toSet());
     }
 
+    /**
+     * Получение всех ссылок из базы данных
+     * по определенному id чата и тегу
+     * проверка по тегу идет, используя преобразование в json
+     * @param chatId id чата
+     * @param tag тег, по которому идет фильтрация
+     * @return все ссылки по id чата и тегу
+     */
+    @Override
+    public Set<Link> getLinksByChatIdAndTag(Long chatId, String tag) {
+        String tagAsJson = "[\"" + tag + "\"]";
+        return jdbcTemplate.query(
+            """
+            SELECT url, tags, filters, update
+            FROM link
+            WHERE chat_id = ? AND tags::jsonb @> ?::jsonb
+            """,
+            new Object[]{chatId, tagAsJson},
+            getLinkRowMapper()
+        ).stream().collect(Collectors.toSet());
+    }
+
     @Override
     public void addLink(Long chatId, Link link) {
         log.info("Chat: {}", chatId);

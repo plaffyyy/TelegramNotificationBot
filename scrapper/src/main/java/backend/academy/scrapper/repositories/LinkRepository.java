@@ -16,4 +16,6 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     Set<Link> getAllByChat(Chat chat);
 
     List<Link> findAllByUrl(@NotNull String url);
+
+    Set<Link> getAllByTagsAndChat(@NotNull List<String> tags, Chat chat);
 }
