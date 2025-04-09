@@ -31,11 +31,13 @@ public non-sealed class StackOverflowClient extends Client {
         String apiLink = "https://api.stackexchange.com/2.3/questions/" + questionId;
         log.warn("Api link: {}", apiLink);
 
-
         try {
-            String questionResponse = clientRequestService.stackOverflowResponse(apiLink + "/?site=stackoverflow", soToken);
-            String answersResponse = clientRequestService.stackOverflowResponse(apiLink + "/answers?order=desc&sort=activity&site=stackoverflow&filter=withbody", soToken);
-            String commentsResponse = clientRequestService.stackOverflowResponse(apiLink + "/comments?order=desc&sort=creation&site=stackoverflow&filter=withbody", soToken);
+            String questionResponse =
+                    clientRequestService.stackOverflowResponse(apiLink + "/?site=stackoverflow", soToken);
+            String answersResponse = clientRequestService.stackOverflowResponse(
+                    apiLink + "/answers?order=desc&sort=activity&site=stackoverflow&filter=withbody", soToken);
+            String commentsResponse = clientRequestService.stackOverflowResponse(
+                    apiLink + "/comments?order=desc&sort=creation&site=stackoverflow&filter=withbody", soToken);
 
             ObjectNode questionJson = (ObjectNode) objectMapper.readTree(questionResponse);
             JsonNode answersJson = objectMapper.readTree(answersResponse);

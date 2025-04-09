@@ -26,7 +26,9 @@ public class UpdatesController {
         String description = (String) request.get("description");
 
         StringBuilder message = new StringBuilder();
-        message.append("📢 Уведомление!\nНовое обновление в ссылке: ").append(url).append("\n");
+        message.append("📢 Уведомление!\nНовое обновление в ссылке: ")
+                .append(url)
+                .append("\n");
         message.append(description);
         notifier.notifyUsers(ids, message.toString());
 

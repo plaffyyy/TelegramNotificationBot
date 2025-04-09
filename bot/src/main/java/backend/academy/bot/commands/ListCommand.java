@@ -22,7 +22,7 @@ public final class ListCommand extends Command {
     public void execute() {
         try {
             bot.execute(new SendMessage(chatId, FileWithTextResponses.listWords));
-            //url is a tag
+            // url is a tag
             ResponseEntity<LinkResponse> response = commandRequestService.listCommandResponse(chatId, url);
             log.info("Response for list operation: {}", response);
             int responseCode = response.getStatusCode().value();

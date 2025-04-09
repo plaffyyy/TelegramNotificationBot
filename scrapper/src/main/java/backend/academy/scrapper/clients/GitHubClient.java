@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Component
 public non-sealed class GitHubClient extends Client {
 
-
     @Autowired
     public GitHubClient(String gitHubToken, ClientRequestService clientRequestService) {
         super(clientRequestService, gitHubToken);
@@ -30,9 +29,8 @@ public non-sealed class GitHubClient extends Client {
 
         try {
             ResponseEntity<String> response1 =
-                clientRequestService.gitHubResponse(apiPullsLink, gitHubToken); // Получаем JSON как строку
-            ResponseEntity<String> response2 =
-                clientRequestService.gitHubResponse(apiIssuesLink, gitHubToken);
+                    clientRequestService.gitHubResponse(apiPullsLink, gitHubToken); // Получаем JSON как строку
+            ResponseEntity<String> response2 = clientRequestService.gitHubResponse(apiIssuesLink, gitHubToken);
 
             JsonNode pulls = objectMapper.readTree(response1.getBody());
             JsonNode issues = objectMapper.readTree(response2.getBody());

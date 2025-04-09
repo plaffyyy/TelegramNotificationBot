@@ -2,7 +2,6 @@ package backend.academy.scrapper.controllers;
 
 import backend.academy.scrapper.dto.LinkResponse;
 import backend.academy.scrapper.dto.TrackLinkResponse;
-import backend.academy.scrapper.entities.Chat;
 import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.exceptions.LinkNotFoundException;
 import backend.academy.scrapper.services.data.LinkService;
@@ -31,13 +30,14 @@ public final class TrackController {
     private final LinkService linkService;
 
     /**
-     * Получение всех ссылок из базы данных
-     * их преобразование в объекты Link из папки model
+     * Получение всех ссылок из базы данных их преобразование в объекты Link из папки model
+     *
      * @return все ссылки
      */
     @ResponseBody
     @GetMapping
-    public ResponseEntity<LinkResponse> getLinks(@RequestHeader("Tg-Chat-Id") String id, @RequestHeader("tag") String tag) {
+    public ResponseEntity<LinkResponse> getLinks(
+            @RequestHeader("Tg-Chat-Id") String id, @RequestHeader("tag") String tag) {
         Long chatId = Long.valueOf(id);
         Set<Link> links;
         if (tag.equals("")) {
@@ -47,10 +47,14 @@ public final class TrackController {
         }
         log.info("Links by id in controller {}: {}", chatId, links);
         Set<backend.academy.scrapper.model.Link> linksForResponse = links.stream()
-            .map(link -> new backend.academy.scrapper.model.Link(link.id(), link.url(),
-                link.tags(), link.filters(),
-                link.update(), new backend.academy.scrapper.model.Chat(chatId)))
-            .collect(Collectors.toSet());
+                .map(link -> new backend.academy.scrapper.model.Link(
+                        link.id(),
+                        link.url(),
+                        link.tags(),
+                        link.filters(),
+                        link.update(),
+                        new backend.academy.scrapper.model.Chat(chatId)))
+                .collect(Collectors.toSet());
 
         LinkResponse linkResponse = new LinkResponse(linksForResponse, links.size());
         log.info("LinkResponse by id in controller: {}", linkResponse);
@@ -69,8 +73,6 @@ public final class TrackController {
         List<String> filters = (List<String>) request.getOrDefault("filters", List.of());
 
         Link link = new Link(url, tags, filters);
-
-        log.info("Link for adding: {} and chatId: {}", link, chatId);
 
         linkService.addLink(chatId, link);
         log.info("links by id {}", linkService.getLinksByChatId(chatId).toString());

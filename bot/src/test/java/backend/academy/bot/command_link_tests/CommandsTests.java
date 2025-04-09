@@ -1,15 +1,15 @@
-//package backend.academy.bot.command_link_tests;
+// package backend.academy.bot.command_link_tests;
 //
-//import static org.junit.jupiter.api.Assertions.*;
+// import static org.junit.jupiter.api.Assertions.*;
 //
-//import backend.academy.bot.commands.ListCommand;
-//import backend.academy.bot.dto.LinkResponse;
-//import backend.academy.bot.model.Link;
-//import java.util.Set;
-//import org.junit.Test;
-//import org.junit.jupiter.api.DisplayName;
+// import backend.academy.bot.commands.ListCommand;
+// import backend.academy.bot.dto.LinkResponse;
+// import backend.academy.bot.model.Link;
+// import java.util.Set;
+// import org.junit.Test;
+// import org.junit.jupiter.api.DisplayName;
 //
-//public class CommandsTests {
+// public class CommandsTests {
 //
 //    @DisplayName("Проверка на форматирование ссылок")
 //    @Test
@@ -28,4 +28,4 @@
 //        assertTrue(formatingLinks.contains("https://github.com/plaffyyy/ZdecEmptyLink"));
 //        assertTrue(formatingLinks.startsWith("Отслеживаемые ссылки:\n"));
 //    }
-//}
+// }

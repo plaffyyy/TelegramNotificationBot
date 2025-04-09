@@ -32,7 +32,7 @@ public final class StartCommand extends Command {
                 bot.execute(new SendMessage(chatId, FileWithTextResponses.errorStart));
             }
         } catch (Exception e) {
-            return;
+            log.error("An error occurred", e);
         }
     }
 }

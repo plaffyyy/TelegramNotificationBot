@@ -5,12 +5,12 @@ import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.exceptions.ChatNotCreatedException;
 import backend.academy.scrapper.repositories.ChatRepository;
 import backend.academy.scrapper.repositories.LinkRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,6 +45,7 @@ public class OrmLinkService extends LinkService {
 
     /**
      * Получение всех чатов из базы данных для теста
+     *
      * @return количество чатов
      */
     public long getAllChats() {
@@ -53,32 +54,28 @@ public class OrmLinkService extends LinkService {
 
     public Set<Link> getLinksByChatId(Long chatId) {
         Optional<Chat> chat = chatRepository.findById(chatId);
-        return linkRepository.getAllByChat(chat.orElseThrow(() ->
-            new ChatNotCreatedException("Чат с таким id не существует")));
+        return linkRepository.getAllByChat(
+                chat.orElseThrow(() -> new ChatNotCreatedException("Чат с таким id не существует")));
     }
 
     @Override
     public Set<Link> getLinksByChatIdAndTag(Long chatId, String tag) {
         Optional<Chat> chat = chatRepository.findById(chatId);
-        if (chat.isEmpty()) {
-            throw new ChatNotCreatedException("Чат с таким id не существует");
-        }
-
-        return linkRepository.getAllByChat(chat.get()).stream()
-            .filter(link -> link.tags().contains(tag))
-            .collect(Collectors.toSet());
+        return linkRepository
+                .getAllByChat(chat.orElseThrow(() -> new ChatNotCreatedException("Чат с таким id не существует")))
+                .stream()
+                .filter(link -> link.tags().contains(tag))
+                .collect(Collectors.toSet());
     }
 
-
-    //TODO: добавить выброс глобальной ошибки при неправильном
+    // TODO: добавить выброс глобальной ошибки при неправильном
     // или несуществующем chatId
     @Transactional
     public void addLink(Long chatId, Link link) {
 
         log.info("In data service layer");
-        Chat chat = chatRepository.findById(chatId).orElseThrow(
-            () -> new ChatNotCreatedException("Нет чата с таким id")
-        );
+        Chat chat =
+                chatRepository.findById(chatId).orElseThrow(() -> new ChatNotCreatedException("Нет чата с таким id"));
 
         log.info("Chat: {}", chat);
         link.chat(chat);
@@ -99,41 +96,36 @@ public class OrmLinkService extends LinkService {
             }
         }
         return null;
-
     }
 
     /**
      * Здесь получаем все chatId по url, для того, чтобы им потом уведомление присылать
+     *
      * @param link передаем параметр link, но берем из не url потом
      * @return List<Long> - лист всех id чатов
      */
     public List<Long> getIdsByLink(Link link) {
-        return linkRepository.findAllByUrl(link.url())
-            .stream()
-            .map(l -> l.chat().id())
-            .distinct()
-            .collect(Collectors.toList());
+        return linkRepository.findAllByUrl(link.url()).stream()
+                .map(l -> l.chat().id())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @Override
     public JsonNode getUpdate(String url) {
-        return linkRepository.findAllByUrl(url)
-            .stream()
-            .findFirst()
-            .map(Link::update)
-            .orElse(null);
+        return linkRepository.findAllByUrl(url).stream()
+                .findFirst()
+                .map(Link::update)
+                .orElse(null);
     }
 
     @Transactional
     @Override
     public void changeUpdate(String url, JsonNode update) {
-        linkRepository.findAllByUrl(url)
-            .forEach(link -> {
-                link.update(update);
-                linkRepository.save(link);
-                linkRepository.flush();
-            });
+        linkRepository.findAllByUrl(url).forEach(link -> {
+            link.update(update);
+            linkRepository.save(link);
+            linkRepository.flush();
+        });
     }
-
-
 }

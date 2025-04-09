@@ -22,8 +22,8 @@ public class UpdateRequestService implements SendNotification {
 
     public void sendUpdateToBot(Link link, List<Long> ids, String description) {
 
-        Map<String, Object> jsonRequest = Map.of(
-                "id", random.nextLong(), "url", link.url(), "description", description, "tgChatIds", ids);
+        Map<String, Object> jsonRequest =
+                Map.of("id", random.nextLong(), "url", link.url(), "description", description, "tgChatIds", ids);
 
         restClient
                 .post()

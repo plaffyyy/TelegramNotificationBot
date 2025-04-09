@@ -3,10 +3,10 @@ package backend.academy.scrapper.services.data;
 import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.utils.converters.JsonConverter;
 import backend.academy.scrapper.utils.converters.StringListConverter;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +31,14 @@ public class SqlLinkService extends LinkService {
     }
 
     /**
-     * Получение всех ссылок из базы данных
-     * их преобразование в объекты Link
+     * Получение всех ссылок из базы данных их преобразование в объекты Link
+     *
      * @return все ссылки
      */
     @Override
     public Set<Link> getAllLinks() {
-        Set<Link> links = jdbcTemplate.query(
-            "SELECT url, tags, filters, update FROM link",
-            getLinkRowMapper()).stream().collect(Collectors.toSet());
+        Set<Link> links = jdbcTemplate.query("SELECT url, tags, filters, update FROM link", getLinkRowMapper()).stream()
+                .collect(Collectors.toSet());
         log.info("Links in service: {}", links);
         return links;
     }
@@ -47,38 +46,36 @@ public class SqlLinkService extends LinkService {
     @Override
     public void createChatById(Long id) {
         jdbcTemplate.update(
-            """
+                """
                 INSERT INTO chat(id) values (?)
                 ON CONFLICT (id) DO NOTHING
             """,
-            id
-        );
+                id);
     }
 
     @Override
     public void deleteChatById(Long id) {
-        jdbcTemplate.update(
-            "DELETE FROM chat where id=?",
-            id
-        );
+        jdbcTemplate.update("DELETE FROM chat where id=?", id);
     }
 
     @Override
     public Set<Link> getLinksByChatId(Long chatId) {
-        return jdbcTemplate.query(
-            """
+        return jdbcTemplate
+                .query(
+                        """
                 SELECT url, tags, filters, update
                 FROM link WHERE chat_id=?
             """,
-            new Object[]{chatId},
-            getLinkRowMapper()
-        ).stream().collect(Collectors.toSet());
+                        new Object[] {chatId},
+                        getLinkRowMapper())
+                .stream()
+                .collect(Collectors.toSet());
     }
 
     /**
-     * Получение всех ссылок из базы данных
-     * по определенному id чата и тегу
-     * проверка по тегу идет, используя преобразование в json
+     * Получение всех ссылок из базы данных по определенному id чата и тегу проверка по тегу идет, используя
+     * преобразование в json
+     *
      * @param chatId id чата
      * @param tag тег, по которому идет фильтрация
      * @return все ссылки по id чата и тегу
@@ -86,100 +83,100 @@ public class SqlLinkService extends LinkService {
     @Override
     public Set<Link> getLinksByChatIdAndTag(Long chatId, String tag) {
         String tagAsJson = "[\"" + tag + "\"]";
-        return jdbcTemplate.query(
-            """
+        return jdbcTemplate
+                .query(
+                        """
             SELECT url, tags, filters, update
             FROM link
             WHERE chat_id = ? AND tags::jsonb @> ?::jsonb
             """,
-            new Object[]{chatId, tagAsJson},
-            getLinkRowMapper()
-        ).stream().collect(Collectors.toSet());
+                        new Object[] {chatId, tagAsJson},
+                        getLinkRowMapper())
+                .stream()
+                .collect(Collectors.toSet());
     }
 
     @Override
     public void addLink(Long chatId, Link link) {
         log.info("Chat: {}", chatId);
         jdbcTemplate.update(
-            """
+                """
             INSERT INTO link(url, tags, filters, update, chat_id)
             VALUES (?,?,?,null,?)
             """,
-            link.url(),
-            stringListConverter.convertToDatabaseColumn(link.tags()),
-            stringListConverter.convertToDatabaseColumn(link.filters()),
-            chatId
-        );
+                link.url(),
+                stringListConverter.convertToDatabaseColumn(link.tags()),
+                stringListConverter.convertToDatabaseColumn(link.filters()),
+                chatId);
     }
 
     /**
      * Удаление ссылки по url в определенном чате
+     *
      * @param chatId id чата
      * @param url этой ссылки
      * @return ссылка, которая была удалена
      */
     @Override
     public Link removeLinkByUrl(long chatId, String url) {
-        Link link = jdbcTemplate.query(
-            """
+        Link link = jdbcTemplate
+                .query(
+                        """
                 SELECT url, tags, filters, update
                 FROM link WHERE url=? and chat_id=?
             """,
-            new Object[]{url, chatId},
-            getLinkRowMapper()
-        ).stream().findAny().orElse(null);
+                        new Object[] {url, chatId},
+                        getLinkRowMapper())
+                .stream()
+                .findAny()
+                .orElse(null);
         jdbcTemplate.update(
                 """
                 DELETE FROM link WHERE url=? and chat_id=?
-                """,
-            url, chatId
-        );
+                """, url, chatId);
         return link;
     }
-
 
     @Override
     public List<Long> getIdsByLink(Link link) {
         return jdbcTemplate.query(
-            """
+                """
                 SELECT DISTINCT chat_id FROM link
                 WHERE url=?
                 ORDER BY chat_id
                 """,
-            new Object[]{link.url()},
-            new BeanPropertyRowMapper<>(Long.class)
-        );
+                new Object[] {link.url()},
+                new BeanPropertyRowMapper<>(Long.class));
     }
-
 
     @Override
     public JsonNode getUpdate(String url) {
-        return jdbcTemplate.query(
-            """
+        return jdbcTemplate
+                .query(
+                        """
                 SELECT update FROM link WHERE url=?
             """,
-            new Object[]{url},
-            (rs, rowNum) -> jsonConverter.convertToEntityAttribute(rs.getString("update"))
-        ).stream().findFirst().orElse(null);
+                        new Object[] {url},
+                        (rs, rowNum) -> jsonConverter.convertToEntityAttribute(rs.getString("update")))
+                .stream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public void changeUpdate(String url, JsonNode update) {
         jdbcTemplate.update(
-            """
+                """
                 UPDATE link SET update=?
                 WHERE url=?
             """,
-            jsonConverter.convertToDatabaseColumn(update),
-            url
-        );
+                jsonConverter.convertToDatabaseColumn(update),
+                url);
     }
 
-
-
     /**
-     *
      * Преобразование в объекты Link из SQL кода
+     *
      * @return RowMapper<Link> который содержит маппер этой ссылки
      */
     private @NotNull RowMapper<Link> getLinkRowMapper() {
@@ -192,5 +189,4 @@ public class SqlLinkService extends LinkService {
             return l;
         };
     }
-
 }

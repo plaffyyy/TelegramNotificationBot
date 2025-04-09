@@ -11,11 +11,11 @@ public final class ClientRequestService {
 
     public String stackOverflowResponse(String apiLink, String stackOverflowToken) {
         return restClient
-            .get()
-            .uri(apiLink)
-            .header("X-API-Access-key", stackOverflowToken)
-            .retrieve()
-            .body(String.class);
+                .get()
+                .uri(apiLink)
+                .header("X-API-Access-key", stackOverflowToken)
+                .retrieve()
+                .body(String.class);
     }
 
     public ResponseEntity<String> gitHubResponse(String apiLink, String gitHubToken) {

@@ -2,18 +2,17 @@ package backend.academy.scrapper.updates;
 
 import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
-import backend.academy.scrapper.exceptions.UndefinedUrlException;
 import backend.academy.scrapper.entities.Link;
+import backend.academy.scrapper.exceptions.UndefinedUrlException;
+import backend.academy.scrapper.services.data.LinkService;
 import backend.academy.scrapper.services.updateParser.ParserHandler;
 import backend.academy.scrapper.services.updateParser.UpdateParser;
 import backend.academy.scrapper.services.updateSend.SendNotification;
-import backend.academy.scrapper.services.updateSend.UpdateRequestService;
-import backend.academy.scrapper.services.data.LinkService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Set;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -44,7 +43,7 @@ public class LinkUpdateChecker {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String responseJson = objectMapper.writeValueAsString(response);
                 String lastUpdateJson = objectMapper.writeValueAsString(lastUpdate);
-                //изменение когда ссылка только была добавлена
+                // изменение когда ссылка только была добавлена
                 // и еще нет обновлений
                 if (lastUpdateJson.equals("{}")) {
                     linkService.changeUpdate(link.url(), response);

@@ -54,7 +54,7 @@ public class Link {
     @Column(columnDefinition = "TEXT")
     @Convert(converter = JsonConverter.class)
     private JsonNode update;
-    //TODO: в дальнейшем возможно поменять хранение типа в бд на jsonb
+    // TODO: в дальнейшем возможно поменять хранение типа в бд на jsonb
     @ManyToOne
     @JoinColumn(name = "chat_id")
     private Chat chat;

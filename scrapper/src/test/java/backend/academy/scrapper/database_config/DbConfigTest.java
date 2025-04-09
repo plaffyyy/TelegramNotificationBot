@@ -11,9 +11,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public abstract class DbConfigTest {
 
     static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:14.17")
-        .withDatabaseName("testDb")
-        .withUsername("postgres")
-        .withPassword("postgres");
+            .withDatabaseName("testDb")
+            .withUsername("postgres")
+            .withPassword("postgres");
 
     static {
         postgreSQLContainer.start();
@@ -30,5 +30,4 @@ public abstract class DbConfigTest {
         registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
         registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
     }
-
 }

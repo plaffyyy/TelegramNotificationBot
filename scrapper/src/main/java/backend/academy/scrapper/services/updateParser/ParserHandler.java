@@ -1,9 +1,6 @@
 package backend.academy.scrapper.services.updateParser;
 
-import backend.academy.scrapper.clients.GitHubClient;
-import backend.academy.scrapper.clients.StackOverflowClient;
 import backend.academy.scrapper.exceptions.UndefinedUrlException;
-import com.fasterxml.jackson.databind.JsonNode;
 
 public class ParserHandler {
 
@@ -16,5 +13,4 @@ public class ParserHandler {
             throw new UndefinedUrlException("Incorrect link");
         }
     }
-
 }
