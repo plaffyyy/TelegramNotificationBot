@@ -4,6 +4,8 @@ import backend.academy.scrapper.dto.LinkResponse;
 import backend.academy.scrapper.dto.TrackLinkResponse;
 import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.exceptions.LinkNotFoundException;
+import backend.academy.scrapper.model.ChatDto;
+import backend.academy.scrapper.model.LinkDto;
 import backend.academy.scrapper.services.data.LinkService;
 import java.util.List;
 import java.util.Map;
@@ -38,24 +40,19 @@ public final class TrackController {
     @GetMapping
     public ResponseEntity<LinkResponse> getLinks(
             @RequestHeader("Tg-Chat-Id") String id, @RequestHeader("tag") String tag) {
-        Long chatId = Long.valueOf(id);
+        long chatId = Long.parseLong(id);
         Set<Link> links;
-        if (tag.equals("")) {
+        if (tag.isEmpty()) {
             links = linkService.getLinksByChatId(chatId);
         } else {
             links = linkService.getLinksByChatIdAndTag(chatId, tag);
         }
         log.info("Links by id in controller {}: {}", chatId, links);
-        Set<backend.academy.scrapper.model.Link> linksForResponse = links.stream()
-                .map(link -> new backend.academy.scrapper.model.Link(
-                        link.id(),
-                        link.url(),
-                        link.tags(),
-                        link.filters(),
-                        link.update(),
-                        new backend.academy.scrapper.model.Chat(chatId)))
+        Set<LinkDto> linksForResponse = links.stream()
+                .map(link -> new LinkDto(
+                        link.id(), link.url(), link.tags(), link.filters(), link.update(), new ChatDto(chatId)))
                 .collect(Collectors.toSet());
-
+        log.info("LinksForResponse by id in controller {}: {}", chatId, linksForResponse);
         LinkResponse linkResponse = new LinkResponse(linksForResponse, links.size());
         log.info("LinkResponse by id in controller: {}", linkResponse);
 
@@ -64,20 +61,21 @@ public final class TrackController {
 
     @PostMapping
     public ResponseEntity<TrackLinkResponse> trackLink(
-            @RequestHeader("Tg-Chat-Id") Long chatId, @RequestBody Map<String, Object> request) {
+            @RequestHeader("Tg-Chat-Id") String chatId, @RequestBody Map<String, Object> request) {
         log.info("Just log for check that controller get this");
 
         String url = String.valueOf(request.get("url"));
+        long chatID = Long.parseLong(chatId);
 
         List<String> tags = (List<String>) request.getOrDefault("tags", List.of());
         List<String> filters = (List<String>) request.getOrDefault("filters", List.of());
 
         Link link = new Link(url, tags, filters);
 
-        linkService.addLink(chatId, link);
-        log.info("links by id {}", linkService.getLinksByChatId(chatId).toString());
+        linkService.addLink(chatID, link);
+        log.info("links by id {}", linkService.getLinksByChatId(chatID).toString());
 
-        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatId, url, tags, filters);
+        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatID, url, tags, filters);
         log.info("TrackLinkResponse url: {}", trackLinkResponse.url());
         return ResponseEntity.ok(trackLinkResponse);
     }

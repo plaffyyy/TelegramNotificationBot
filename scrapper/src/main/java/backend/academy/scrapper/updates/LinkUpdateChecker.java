@@ -42,7 +42,7 @@ public class LinkUpdateChecker {
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 String responseJson = objectMapper.writeValueAsString(response);
-                String lastUpdateJson = objectMapper.writeValueAsString(lastUpdate);
+                String lastUpdateJson = lastUpdate != null ? objectMapper.writeValueAsString(lastUpdate) : "{}";
                 // изменение когда ссылка только была добавлена
                 // и еще нет обновлений
                 if (lastUpdateJson.equals("{}")) {
