@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class UpdateRequestService implements SendNotification {
+public class SendNotificationHttp implements SendNotification {
 
-    public UpdateRequestService(@Value("${url.updates}") String botUpdates) {
+    public SendNotificationHttp(@Value("${url.updates}") String botUpdates) {
         this.botUpdates = botUpdates;
     }
 
@@ -20,6 +20,7 @@ public class UpdateRequestService implements SendNotification {
     private final Random random = new Random();
     private final String botUpdates;
 
+    @Override
     public void sendUpdateToBot(Link link, List<Long> ids, String description) {
 
         Map<String, Object> jsonRequest =
