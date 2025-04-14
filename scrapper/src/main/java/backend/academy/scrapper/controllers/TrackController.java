@@ -2,15 +2,17 @@ package backend.academy.scrapper.controllers;
 
 import backend.academy.scrapper.dto.LinkResponse;
 import backend.academy.scrapper.dto.TrackLinkResponse;
+import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.exceptions.LinkNotFoundException;
-import backend.academy.scrapper.model.Link;
-import backend.academy.scrapper.repositories.LinkRepository;
+import backend.academy.scrapper.model.ChatDto;
+import backend.academy.scrapper.model.LinkDto;
+import backend.academy.scrapper.services.data.LinkService;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,35 +29,54 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/links")
 public final class TrackController {
 
-    @Autowired
-    private final LinkRepository linkRepository;
+    private final LinkService linkService;
 
+    /**
+     * Получение всех ссылок из базы данных их преобразование в объекты Link из папки model
+     *
+     * @return все ссылки
+     */
     @ResponseBody
     @GetMapping
-    public ResponseEntity<LinkResponse> getLinks(@RequestHeader("Tg-Chat-Id") String id) {
-        Long chatId = Long.valueOf(id);
-        Set<Link> links = linkRepository.getLinksByChatId(chatId);
-
-        LinkResponse linkResponse = new LinkResponse(links, links.size());
+    public ResponseEntity<LinkResponse> getLinks(
+            @RequestHeader("Tg-Chat-Id") String id, @RequestHeader("tag") String tag) {
+        long chatId = Long.parseLong(id);
+        Set<Link> links;
+        if (tag.isEmpty()) {
+            links = linkService.getLinksByChatId(chatId);
+        } else {
+            links = linkService.getLinksByChatIdAndTag(chatId, tag);
+        }
+        log.info("Links by id in controller {}: {}", chatId, links);
+        Set<LinkDto> linksForResponse = links.stream()
+                .map(link -> new LinkDto(
+                        link.id(), link.url(), link.tags(), link.filters(), link.update(), new ChatDto(chatId)))
+                .collect(Collectors.toSet());
+        log.info("LinksForResponse by id in controller {}: {}", chatId, linksForResponse);
+        LinkResponse linkResponse = new LinkResponse(linksForResponse, links.size());
+        log.info("LinkResponse by id in controller: {}", linkResponse);
 
         return ResponseEntity.ok(linkResponse);
     }
 
     @PostMapping
     public ResponseEntity<TrackLinkResponse> trackLink(
-            @RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
-        Long chatId = Long.valueOf(id);
+            @RequestHeader("Tg-Chat-Id") String chatId, @RequestBody Map<String, Object> request) {
+        log.info("Just log for check that controller get this");
+
         String url = String.valueOf(request.get("url"));
+        long chatID = Long.parseLong(chatId);
 
         List<String> tags = (List<String>) request.getOrDefault("tags", List.of());
         List<String> filters = (List<String>) request.getOrDefault("filters", List.of());
 
         Link link = new Link(url, tags, filters);
 
-        linkRepository.addLink(chatId, link);
-        log.info("links by id {}", linkRepository.getLinksByChatId(chatId).toString());
+        linkService.addLink(chatID, link);
+        log.info("links by id {}", linkService.getLinksByChatId(chatID).toString());
 
-        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatId, url, tags, filters);
+        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatID, url, tags, filters);
+        log.info("TrackLinkResponse url: {}", trackLinkResponse.url());
         return ResponseEntity.ok(trackLinkResponse);
     }
 
@@ -65,7 +86,7 @@ public final class TrackController {
         long chatId = Long.parseLong(id);
         String url = String.valueOf(request.get("url"));
         try {
-            Link link = linkRepository.removeLinkByUrl(chatId, url);
+            Link link = linkService.removeLinkByUrl(chatId, url);
             if (link == null) {
                 throw new LinkNotFoundException("Ссылка " + url + " не найдена");
             }

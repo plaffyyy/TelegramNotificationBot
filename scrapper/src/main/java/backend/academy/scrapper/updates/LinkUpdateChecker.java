@@ -2,56 +2,61 @@ package backend.academy.scrapper.updates;
 
 import backend.academy.scrapper.clients.Client;
 import backend.academy.scrapper.clients.ClientHandler;
+import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.exceptions.UndefinedUrlException;
-import backend.academy.scrapper.model.Link;
-import backend.academy.scrapper.repositories.LinkRepository;
-import backend.academy.scrapper.repositories.UpdateRepository;
-import backend.academy.scrapper.services.UpdateRequestService;
+import backend.academy.scrapper.services.data.LinkService;
+import backend.academy.scrapper.services.updateParser.ParserHandler;
+import backend.academy.scrapper.services.updateParser.UpdateParser;
+import backend.academy.scrapper.services.updateSend.SendNotification;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Getter
-@Component
+@Service
 @AllArgsConstructor
 public class LinkUpdateChecker {
-    private final LinkRepository linkRepository;
-    private final UpdateRepository updateRepository;
+    private final LinkService linkService;
     private final ClientHandler clientHandler;
-    private final UpdateRequestService updateRequestService;
+    private final SendNotification sendNotification;
 
     @SneakyThrows
     public void checkForUpdates() {
 
-        Set<Link> links = linkRepository.getAllLinks();
-
+        Set<Link> links = linkService.getAllLinks();
+        log.info("Links in update checker: {}", links);
         for (Link link : links) {
             try {
                 Client client = clientHandler.handleClients(link.url());
                 JsonNode response = client.getApi(link.url());
                 if (response == null) continue;
-                JsonNode lastUpdate = updateRepository.getLastUpdate(link.url());
+                JsonNode lastUpdate = linkService.getUpdate(link.url());
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 String responseJson = objectMapper.writeValueAsString(response);
-                String lastUpdateJson = objectMapper.writeValueAsString(lastUpdate);
-
-                if (lastUpdate == null) {
-                    updateRepository.addUpdate(link.url(), response);
+                String lastUpdateJson = lastUpdate != null ? objectMapper.writeValueAsString(lastUpdate) : "{}";
+                // изменение когда ссылка только была добавлена
+                // и еще нет обновлений
+                if (lastUpdateJson.equals("{}")) {
+                    linkService.changeUpdate(link.url(), response);
 
                 } else if (!responseJson.equals(lastUpdateJson)) {
-                    List<Long> ids = linkRepository.getIdsByLink(link);
+                    List<Long> ids = linkService.getIdsByLink(link);
 
-                    updateRequestService.sendUpdateToBot(link, ids);
+                    UpdateParser updateParser = new ParserHandler().handleClients(link.url());
+                    String description = updateParser.parse((ObjectNode) response, (ObjectNode) lastUpdate);
 
-                    updateRepository.changeUpdate(link.url(), response);
+                    sendNotification.sendUpdateToBot(link, ids, description);
+
+                    linkService.changeUpdate(link.url(), response);
                 }
             } catch (UndefinedUrlException e) {
                 log.error("Ошибка в LinkUpdateChecker: {}", e.getMessage());

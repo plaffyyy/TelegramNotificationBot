@@ -19,6 +19,10 @@
 Также в корне проекта нужно создать файл .env и прописать следующие ключи:
 - TELEGRAM_TOKEN=<Ваш токен>
 - GITHUB_TOKEN=<Ваш токен>
+- SO_TOKEN_KEY=<Ваш токен>
+- POSTGRES_DB=<Имя БД>
+- POSTGRES_USER=<Имя пользователя>
+- POSTGRES_PASSWORD=<Пароль>
 
 ### Запуск
 

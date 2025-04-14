@@ -41,7 +41,10 @@ public class CommandHandler {
                     }
                     yield new UntrackCommand(chatId, bot, commandRequestService, url);
                 }
-                case "/list" -> new ListCommand(chatId, bot, commandRequestService);
+                case "/list" -> {
+                    String tag = messageLink.length == 2 ? messageLink[1] : "";
+                    yield new ListCommand(chatId, bot, commandRequestService, tag);
+                }
                 default -> throw new NotFoundCommandException("У бота нет такой команды");
             };
         } catch (NotFoundCommandException e) {
