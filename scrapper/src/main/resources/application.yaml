@@ -3,6 +3,12 @@ app:
   stackoverflow:
     key: ${SO_TOKEN_KEY}
     access-token: ${SO_ACCESS_TOKEN}
+  message-transport:
+    HTTP #{Kafka, HTTP} for update transport
+  kafka:
+    topic:
+      updates: "notifications"
+
 url:
   updates: "http://bot:8082/updates"
 spring:
