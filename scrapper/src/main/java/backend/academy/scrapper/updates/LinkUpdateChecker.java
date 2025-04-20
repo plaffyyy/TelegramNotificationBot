@@ -32,7 +32,6 @@ public class LinkUpdateChecker {
     public void checkForUpdates() {
 
         Set<Link> links = linkService.getAllLinks();
-        log.info("Links in update checker: {}", links);
         for (Link link : links) {
             try {
                 Client client = clientHandler.handleClients(link.url());
