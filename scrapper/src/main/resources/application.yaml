@@ -3,11 +3,7 @@ app:
   stackoverflow:
     key: ${SO_TOKEN_KEY}
     access-token: ${SO_ACCESS_TOKEN}
-  message-transport:
-    HTTP #{Kafka, HTTP} for update transport
-  kafka:
-    topic:
-      updates: "notifications"
+
 
 url:
   updates: "http://bot:8082/updates"
@@ -29,12 +25,28 @@ spring:
       ddl-auto: validate
     open-in-view: false
 
+  kafka:
+    topic:
+      updates: "notifications"
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        acks: 1
+        spring:
+          json:
+            add:
+              type:
+                headers: false
+
 server:
   port: 8082
 
 access-type:
   ORM
-
+message-transport:
+  Kafka #{Kafka, HTTP} for update transport
 springdoc:
   swagger-ui:
     enabled: true
