@@ -4,6 +4,18 @@ url:
   links: "http://scrapper:8082/links"
   tg-chats: "http://scrapper:8082/tg-chat"
 spring:
+  data:
+    redis:
+      host: redis
+      port: 6379
+      database: 0
+      timeout: 5000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
   kafka:
     topic:
       updates: "notifications"
@@ -26,6 +38,8 @@ bot:
   notification:
     mode: DAILY_DIGEST  # or IMMEDIATE
     digest-time: "10:00"  # time of day to send the digest
+  cache:
+    list-ttl: 300  # TTL for /list cache in seconds (5 minutes)
 
 springdoc:
   swagger-ui:

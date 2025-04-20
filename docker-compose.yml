@@ -1,7 +1,15 @@
 version: '3.8'
 
 services:
-
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    command: redis-server --appendonly yes
   updates-db:
     image: postgres:14.17
     container_name: updates-db
@@ -123,6 +131,8 @@ services:
       context: .
       dockerfile: scrapper/Dockerfile
     depends_on:
+      redis:
+        condition: service_started
       updates-db:
         condition: service_healthy
       kafka:
@@ -146,6 +156,8 @@ services:
         condition: service_healthy
       scrapper:
         condition: service_started
+      redis:
+        condition: service_started
 
     networks:
       - app-network
@@ -158,3 +170,4 @@ networks:
 volumes:
   pg_data:
   kafka_data:
+  redis_data:
