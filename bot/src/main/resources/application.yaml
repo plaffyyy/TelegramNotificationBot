@@ -9,7 +9,7 @@ spring:
       updates: "notifications"
     bootstrap-servers: kafka:29092
     consumer:
-      group-id: bot
+      group-id: bot   
   application:
     name: Bot
   liquibase:
@@ -21,6 +21,11 @@ spring:
 
 server:
   port: 8082
+
+bot:
+  notification:
+    mode: DAILY_DIGEST  # or IMMEDIATE
+    digest-time: "10:00"  # time of day to send the digest
 
 springdoc:
   swagger-ui:

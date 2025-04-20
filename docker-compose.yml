@@ -77,6 +77,11 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      # Retention configurations
+      KAFKA_LOG_RETENTION_HOURS: "24"           # Keep messages for 24 hours
+      KAFKA_LOG_RETENTION_BYTES: "1073741824"   # Keep up to 1GB of messages
+      KAFKA_LOG_SEGMENT_BYTES: "536870912"      # Each segment can be up to 512MB
+      KAFKA_LOG_CLEANUP_POLICY: "delete"        # Delete old messages (alternative is "compact")
     ports:
       - "29092:29092"   # для контейнеров (scrapper, bot)
       - "9092:9092"     # для локального компьютера

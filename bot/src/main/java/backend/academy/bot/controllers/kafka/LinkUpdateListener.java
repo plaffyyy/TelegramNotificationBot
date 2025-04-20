@@ -21,34 +21,44 @@ public class LinkUpdateListener {
     @KafkaListener(
         topics = "${spring.kafka.topic.updates}",
         groupId = "${spring.kafka.consumer.group-id}",
-        containerFactory = "kafkaListenerContainerFactory"
+        containerFactory = "kafkaListenerContainerFactory",
+        batch = "true"
     )
     public void listen(
-        @Payload LinkUpdateRequest request,
-        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-        @Header(KafkaHeaders.OFFSET) long offset
+        @Payload List<LinkUpdateRequest> requests,
+        @Header(KafkaHeaders.RECEIVED_PARTITION) List<Integer> partitions,
+        @Header(KafkaHeaders.OFFSET) List<Long> offsets
     ) {
-        try {
-            log.info("Received message: partition={}, offset={}, request={}", partition, offset, request);
+        log.info("Received batch of {} messages", requests.size());
+        
+        for (int i = 0; i < requests.size(); i++) {
+            LinkUpdateRequest request = requests.get(i);
+            int partition = partitions.get(i);
+            long offset = offsets.get(i);
             
-            List<Long> ids = request.ids() == null ? List.of() : request.ids();
-            String url = request.url();
-            String description = request.description();
+            try {
+                log.info("Processing message: partition={}, offset={}, request={}", 
+                    partition, offset, request);
+                
+                List<Long> ids = request.ids() == null ? List.of() : request.ids();
+                String url = request.url();
+                String description = request.description();
 
-            StringBuilder message = new StringBuilder();
-            message.append("📢 Уведомление!\nНовое обновление в ссылке: ")
-                .append(url)
-                .append("\n");
-            message.append(description);
-            
-            notifier.notifyUsers(ids, message.toString());
-            
-            log.info("Successfully processed message: partition={}, offset={}", partition, offset);
-        } catch (Exception e) {
-            log.error("Error processing message: partition={}, offset={}, error={}", 
-                partition, offset, e.getMessage(), e);
-            // You might want to implement retry logic or dead letter queue here
-            throw e; // Rethrowing to let Kafka know the message wasn't processed
+                StringBuilder message = new StringBuilder();
+                message.append("📢 Уведомление!\nНовое обновление в ссылке: ")
+                    .append(url)
+                    .append("\n");
+                message.append(description);
+                
+                notifier.notifyUsers(ids, message.toString());
+                
+                log.info("Successfully processed message: partition={}, offset={}", 
+                    partition, offset);
+            } catch (Exception e) {
+                log.error("Error processing message: partition={}, offset={}, error={}", 
+                    partition, offset, e.getMessage(), e);
+                // Individual message failure doesn't stop batch processing
+            }
         }
     }
 }
