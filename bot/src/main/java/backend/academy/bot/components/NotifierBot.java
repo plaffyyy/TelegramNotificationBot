@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import backend.academy.bot.services.RedisCacheService;
 @Log4j2
 @AllArgsConstructor
 @Component
@@ -31,6 +31,8 @@ public final class NotifierBot {
     private final TelegramBot bot;
 
     private final CommandRequestService commandRequestService;
+
+    private final RedisCacheService redisCacheService;
 
     public static final Map<Long, TrackCommand> waitingForTags = new ConcurrentHashMap<>();
     public static final Map<Long, TrackCommand> waitingForFilters = new ConcurrentHashMap<>();
@@ -62,7 +64,7 @@ public final class NotifierBot {
                     return UpdatesListener.CONFIRMED_UPDATES_ALL;
                 }
 
-                CommandHandler commandHandler = new CommandHandler(bot, chatId, text, commandRequestService);
+                CommandHandler commandHandler = new CommandHandler(bot, chatId, text, commandRequestService, redisCacheService);
                 Command command = commandHandler.getCommandFromUpdate();
                 try {
                     if (command != null) {
