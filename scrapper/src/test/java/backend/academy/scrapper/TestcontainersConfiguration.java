@@ -14,10 +14,11 @@ import org.testcontainers.utility.DockerImageName;
 import liquibase.integration.spring.SpringLiquibase;
 import javax.sql.DataSource;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.boot.test.context.SpringBootTest;
 // isolated from the "bot" module's containers!
 @TestConfiguration(proxyBeanMethods = false)
-@SpringBootTest
 @Testcontainers
 @ComponentScan("backend.academy.scrapper.services.data")
 class TestcontainersConfiguration {
@@ -34,7 +35,7 @@ class TestcontainersConfiguration {
     @RestartScope
     @ServiceConnection
     KafkaContainer kafkaContainer() {
-        return new KafkaContainer("apache/kafka-native:3.8.1").withExposedPorts(9092);
+        return new KafkaContainer("apache/kafka-native:3.8.1").withExposedPorts(9093);
     }
 
     // @Bean
