@@ -18,8 +18,9 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   liquibase:
-    enabled: false
-#    change-log: classpath:/migrations/changelog/master.xml
+    enabled: true                      # включаем миграции для тестов
+    
+    change-log: classpath:/migrations/changelog/master.xml
   jpa:
     hibernate:
       ddl-auto: validate
