@@ -3,7 +3,7 @@ package backend.academy.scrapper.db_tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import backend.academy.scrapper.database_config.DbConfigTest;
+import backend.academy.scrapper.db_tests.*;
 import backend.academy.scrapper.entities.Chat;
 import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.services.data.SqlLinkService;
@@ -16,15 +16,30 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.TestcontainersConfiguration;
+import org.springframework.context.annotation.Import;
 
-@Slf4j
 @SpringBootTest
-@TestPropertySource(properties = {"access-type=SQL", "spring.jpa.hibernate.ddl-auto=none"})
-// я исключаю создание hibernate здесь, так как его контекст подтягивает
-// а в случае появления hibernate они создают свои бины и ждут их в классе в конструкторе
-public class SqlLinkServiceTests extends DbConfigTest {
+@Import(TestcontainersConfiguration.class)
+@Testcontainers
+@Transactional
+@TestPropertySource(properties = {
+    "access-type=SQL" 
+})
+public class SqlLinkServiceTests {
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine")
+        .withDatabaseName("testDb");
 
     @Autowired
     public SqlLinkServiceTests(SqlLinkService sqlLinkService, JdbcTemplate jdbcTemplate) {
@@ -37,8 +52,6 @@ public class SqlLinkServiceTests extends DbConfigTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @BeforeEach
-    void setupDatabase() {}
 
     @DisplayName("Проверка, что корректно добавляется и удаляется чат")
     @Test
