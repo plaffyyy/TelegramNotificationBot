@@ -12,16 +12,22 @@ public final class StackOverflowUpdateParser extends UpdateParser {
         JsonNode newAnswers = response.get("answers");
         JsonNode lastAnswers = lastUpdate.get("answers");
         // я беру вариант только с добавлением, поэтому только знак >
-        if (newAnswers.size() > lastAnswers.size()) {
+        if (newAnswers != null && lastAnswers != null && newAnswers.size() > lastAnswers.size()) {
             ObjectNode newAnswer = (ObjectNode) newAnswers.get(0);
-            createDescription(result, newAnswer, "ответ");
+
+            if (!getSafeText(newAnswer.path("owner"), "display_name").equals(user)) {
+                createDescription(result, newAnswer, "ответ");
+            }
         }
 
         JsonNode newQuestions = response.get("questions");
         JsonNode lastQuestions = lastUpdate.get("questions");
-        if (newQuestions.size() > lastQuestions.size()) {
+        if (newQuestions != null && lastQuestions != null && newQuestions.size() > lastQuestions.size()) {
             ObjectNode newQuestion = (ObjectNode) newQuestions.get(0);
-            createDescription(result, newQuestion, "вопрос");
+
+            if (!getSafeText(newQuestion.path("owner"), "display_name").equals(user)) {
+                createDescription(result, newQuestion, "вопрос");
+            }
         }
         return result.toString();
     }

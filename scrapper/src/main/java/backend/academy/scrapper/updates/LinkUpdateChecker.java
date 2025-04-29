@@ -52,8 +52,8 @@ public class LinkUpdateChecker {
 
                     UpdateParser updateParser = new ParserHandler().handleClients(link.url());
                     String description = updateParser.parse((ObjectNode) response, (ObjectNode) lastUpdate);
-
-                    sendNotification.sendUpdateToBot(link, ids, description);
+                    //если description пустой, значит мы проигнорировали пользователя из конфигурации
+                    if (!description.isEmpty()) sendNotification.sendUpdateToBot(link, ids, description);
 
                     linkService.changeUpdate(link.url(), response);
                 }
