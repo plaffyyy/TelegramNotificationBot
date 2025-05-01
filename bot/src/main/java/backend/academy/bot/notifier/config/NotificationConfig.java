@@ -27,5 +27,11 @@ public class NotificationConfig {
         DAILY_DIGEST
     }
 
+    public String getDigestCronTime() {
+        return String.format("0 %d %d * * *",
+            digestLocalTime.getMinute(),
+            digestLocalTime.getHour()
+        );
+    }
 
 }
