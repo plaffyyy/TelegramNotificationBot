@@ -30,9 +30,9 @@ public class DeadLetterQueueListener {
             request,
             errorMessage
         );
-        // Here you could implement additional error handling:
+        // There are ways how can handle DLQ messages(for this task log is enough):
         // 1. Send notifications to administrators
         // 2. Store failed messages in a database
         // 3. Trigger manual review process
     }
-} 
+}

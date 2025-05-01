@@ -3,6 +3,7 @@ package backend.academy.bot.services;
 import backend.academy.bot.model.Link;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
@@ -15,12 +16,17 @@ public class RedisCacheService {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private static final String LIST_CACHE_KEY_PREFIX = "bot:list:";
-    private static final Duration CACHE_TTL = Duration.ofMinutes(5);
+    @Value("${bot.cache.list-ttl}")
+    private long cacheTtlSeconds; // Не static поле
+
+    public Duration getCacheTtl() {
+        return Duration.ofSeconds(cacheTtlSeconds);
+    }
 
     public void cacheListResult(Long chatId, Set<Link> links) {
         String key = LIST_CACHE_KEY_PREFIX + chatId;
         try {
-            redisTemplate.opsForValue().set(key, links, CACHE_TTL);
+            redisTemplate.opsForValue().set(key, links, getCacheTtl());
             log.info("Cached list result for chatId: {}", chatId);
         } catch (Exception e) {
             log.error("Failed to cache list result for chatId: {}", chatId, e);
@@ -51,4 +57,4 @@ public class RedisCacheService {
             log.error("Failed to invalidate list cache for chatId: {}", chatId, e);
         }
     }
-} 
+}

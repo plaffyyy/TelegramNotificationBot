@@ -56,24 +56,10 @@ public class SendNotificationKafka implements SendNotification {
 
         } catch (IllegalArgumentException e) {
             // Handle validation errors
-            log.error("Validation error for link {}: {}", link.url(), e.getMessage());
-            LinkUpdateRequest failedRequest = new LinkUpdateRequest(
-                random.nextLong(),
-                link.url(),
-                e.getMessage(), // Use error message as description
-                ids
-            );
-            sendToDLQ(failedRequest, "Validation error: " + e.getMessage());
+            sendToDLQWithExceptionHandling(e, link, ids);
         } catch (Exception e) {
             // Handle other unexpected errors
-            log.error("Unexpected error while sending update for link {}: {}", link.url(), e.getMessage());
-            LinkUpdateRequest failedRequest = new LinkUpdateRequest(
-                random.nextLong(),
-                link.url(),
-                "Failed to process update", // Generic error description
-                ids
-            );
-            sendToDLQ(failedRequest, "Unexpected error: " + e.getMessage());
+            sendToDLQWithExceptionHandling(e, link, ids);
         }
     }
 
@@ -85,7 +71,6 @@ public class SendNotificationKafka implements SendNotification {
         if (description == null || description.trim().isEmpty()) {
             throw new IllegalArgumentException("Description is null or empty");
         }
-        // Add more validation rules as needed
     }
 
     private void sendToDLQ(LinkUpdateRequest request, String errorMessage) {
@@ -102,5 +87,19 @@ public class SendNotificationKafka implements SendNotification {
         } catch (Exception e) {
             log.error("Failed to send message to DLQ: {}", e.getMessage());
         }
+    }
+    private void sendToDLQWithExceptionHandling(Exception e, Link link, List<Long> ids) {
+        if (e instanceof IllegalArgumentException) {
+            log.error("Validation error for link {}: {}", link.url(), e.getMessage());
+        } else {
+            log.error("Unexpected error while sending update for link {}: {}", link.url(), e.getMessage());
+        }
+        LinkUpdateRequest failedRequest = new LinkUpdateRequest(
+            random.nextLong(),
+            link.url(),
+            e instanceof IllegalArgumentException ? e.getMessage() : "Failed to process update",
+            ids
+        );
+        sendToDLQ(failedRequest, "Error: " + e.getMessage());
     }
 }
