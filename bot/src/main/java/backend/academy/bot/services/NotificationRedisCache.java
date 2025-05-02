@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 
@@ -12,13 +13,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class NotificationRedisCache {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisStringTemplate;
     public static final String NOTIFICATION_CACHE_KEY_PREFIX = "bot:notifications:";
 
     public void addNotification(Long chatId, String message) {
         String key = NOTIFICATION_CACHE_KEY_PREFIX + chatId;
         try {
-            redisTemplate.opsForValue().set(key, message);
+            redisStringTemplate.opsForList().rightPush(key, message);
             log.info("New notification add in cache for chatId: {}", chatId);
         } catch (Exception e ) {
             log.error("Failed to add Notification in cache for chatId: {}", chatId);
@@ -27,7 +28,7 @@ public class NotificationRedisCache {
 
     public Set<String> getAllChatIdsFromCache() {
         try {
-            return redisTemplate.keys(NOTIFICATION_CACHE_KEY_PREFIX + "*");
+            return redisStringTemplate.keys(NOTIFICATION_CACHE_KEY_PREFIX + "*");
         } catch (Exception e) {
             log.error("Failed to get chatId from the cache");
             return Set.of();
@@ -38,16 +39,9 @@ public class NotificationRedisCache {
         String key = NOTIFICATION_CACHE_KEY_PREFIX + chatId;
         try {
             // в redis, чтобы взять все элементы конечная граница должна быть -1
-            List<Object> notifications = redisTemplate.opsForList().range(key, 0, -1);
-            if (notifications != null && !notifications.isEmpty()) {
-                return notifications.stream()
-                    .map(Object::toString)
-                    .toList();
-            }
-            //не пришло ни одного уведомления
-            return List.of();
+            return redisStringTemplate.opsForList().range(key, 0, -1);
         } catch (Exception e) {
-            log.error("Failed to get notification from chat id: {}", chatId);
+            log.error("Failed to get notification from chat id: {}, with error: {}", chatId, e.getMessage());
             return List.of();
         }
     }
@@ -55,7 +49,7 @@ public class NotificationRedisCache {
     public void clearNotificationsByChatId(Long chatId) {
         String key = NOTIFICATION_CACHE_KEY_PREFIX + chatId;
         try {
-            redisTemplate.delete(key);
+            redisStringTemplate.delete(key);
             log.info("Removed notification for chat id: {}", chatId);
         } catch (Exception e) {
             log.error("Error in process of deleting notifications by chat id: {}", chatId);

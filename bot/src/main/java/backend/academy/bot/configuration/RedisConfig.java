@@ -35,29 +35,45 @@ public class RedisConfig {
     }
 
     // Step 3: Create RedisTemplate with proper serialization
+    // it's redis template bean for json storage for /list operation
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        
+
         // Set the connection factory
         template.setConnectionFactory(connectionFactory);
-        
+
         // Configure key serializer (String)
         template.setKeySerializer(new StringRedisSerializer());
-        
+
         // Configure value serializer (JSON)
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        
+
         // Configure hash key serializer (String)
         template.setHashKeySerializer(new StringRedisSerializer());
-        
+
         // Configure hash value serializer (JSON)
         // используется для того, чтобы хранить доп информацию о кэше, пока не используется
         template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-        
         // Initialize the template
         template.afterPropertiesSet();
-        
+
+        return template;
+    }
+
+    //bean used for notification storage in redis
+    @Bean
+    public RedisTemplate<String, String> redisStringTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        // Сериализаторы для строк
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new StringRedisSerializer());
+
+        template.afterPropertiesSet();
         return template;
     }
 }

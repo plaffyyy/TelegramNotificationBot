@@ -22,6 +22,7 @@ public class NotificationScheduler {
 
     @Scheduled(cron = "#{@notificationConfig.getDigestCronTime()}")
     public void sendDailyDigest() {
+        log.info("Notifications in process");
         if (notificationConfig.mode() == NotificationConfig.NotificationMode.DAILY_DIGEST) {
             sendDigest();
         }
