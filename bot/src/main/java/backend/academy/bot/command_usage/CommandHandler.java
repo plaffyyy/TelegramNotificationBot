@@ -20,6 +20,7 @@ public class CommandHandler {
     private final String textMessage;
     private final CommandRequestService commandRequestService;
     private final RedisCacheService redisCacheService;
+
     public Command getCommandFromUpdate() {
 
         String[] messageLink = textMessage.split(" ");

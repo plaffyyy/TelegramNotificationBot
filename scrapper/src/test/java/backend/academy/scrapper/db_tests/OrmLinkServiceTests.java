@@ -13,30 +13,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
-
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
 @Testcontainers
 @Transactional // для того чтобы тесты не влияли друг на друга(роллбекаю тесты)
-@TestPropertySource(properties = {
-    "access-type=ORM" 
-})
+@TestPropertySource(properties = {"access-type=ORM"})
 public class OrmLinkServiceTests {
-    
+
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine")
-        .withDatabaseName("testDb");
-        
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine").withDatabaseName("testDb");
+
     @Autowired
     private OrmLinkService ormLinkService;
 

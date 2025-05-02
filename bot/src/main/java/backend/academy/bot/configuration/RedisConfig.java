@@ -61,7 +61,7 @@ public class RedisConfig {
         return template;
     }
 
-    //bean used for notification storage in redis
+    // bean used for notification storage in redis
     @Bean
     public RedisTemplate<String, String> redisStringTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, String> template = new RedisTemplate<>();

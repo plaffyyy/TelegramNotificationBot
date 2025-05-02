@@ -6,6 +6,7 @@ import backend.academy.bot.command_usage.Command;
 import backend.academy.bot.command_usage.CommandHandler;
 import backend.academy.bot.commands.TrackCommand;
 import backend.academy.bot.services.CommandRequestService;
+import backend.academy.bot.services.RedisCacheService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.BotCommand;
@@ -21,7 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import backend.academy.bot.services.RedisCacheService;
+
 @Log4j2
 @AllArgsConstructor
 @Component
@@ -64,7 +65,8 @@ public final class NotifierBot {
                     return UpdatesListener.CONFIRMED_UPDATES_ALL;
                 }
 
-                CommandHandler commandHandler = new CommandHandler(bot, chatId, text, commandRequestService, redisCacheService);
+                CommandHandler commandHandler =
+                        new CommandHandler(bot, chatId, text, commandRequestService, redisCacheService);
                 Command command = commandHandler.getCommandFromUpdate();
                 try {
                     if (command != null) {

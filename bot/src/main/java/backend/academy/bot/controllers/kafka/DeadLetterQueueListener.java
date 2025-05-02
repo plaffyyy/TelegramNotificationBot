@@ -13,23 +13,20 @@ import org.springframework.stereotype.Component;
 public class DeadLetterQueueListener {
 
     @KafkaListener(
-        topics = "${spring.kafka.topic.updates}.DLT",
-        groupId = "${spring.kafka.consumer.group-id}-dlq",
-        containerFactory = "kafkaListenerContainerFactory"
-    )
+            topics = "${spring.kafka.topic.updates}.DLT",
+            groupId = "${spring.kafka.consumer.group-id}-dlq",
+            containerFactory = "kafkaListenerContainerFactory")
     public void listenDLQ(
-        @Payload LinkUpdateRequest request,
-        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-        @Header(KafkaHeaders.OFFSET) long offset,
-        @Header(KafkaHeaders.EXCEPTION_MESSAGE) String errorMessage
-    ) {
+            @Payload LinkUpdateRequest request,
+            @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
+            @Header(KafkaHeaders.OFFSET) long offset,
+            @Header(KafkaHeaders.EXCEPTION_MESSAGE) String errorMessage) {
         log.error(
-            "Dead Letter Queue message: partition={}, offset={}, request={}, error={}",
-            partition,
-            offset,
-            request,
-            errorMessage
-        );
+                "Dead Letter Queue message: partition={}, offset={}, request={}, error={}",
+                partition,
+                offset,
+                request,
+                errorMessage);
         // There are ways how can handle DLQ messages(for this task log is enough):
         // 1. Send notifications to administrators
         // 2. Store failed messages in a database

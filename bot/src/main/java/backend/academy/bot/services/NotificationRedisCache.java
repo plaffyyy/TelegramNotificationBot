@@ -1,12 +1,11 @@
 package backend.academy.bot.services;
 
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -21,7 +20,7 @@ public class NotificationRedisCache {
         try {
             redisStringTemplate.opsForList().rightPush(key, message);
             log.info("New notification add in cache for chatId: {}", chatId);
-        } catch (Exception e ) {
+        } catch (Exception e) {
             log.error("Failed to add Notification in cache for chatId: {}", chatId);
         }
     }
@@ -55,5 +54,4 @@ public class NotificationRedisCache {
             log.error("Error in process of deleting notifications by chat id: {}", chatId);
         }
     }
-
 }

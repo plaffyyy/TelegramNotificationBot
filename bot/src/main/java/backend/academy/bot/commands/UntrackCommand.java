@@ -1,7 +1,6 @@
 package backend.academy.bot.commands;
 
 import backend.academy.bot.command_usage.Command;
-import backend.academy.bot.command_usage.FileWithTextResponses;
 import backend.academy.bot.dto.TrackLinkResponse;
 import backend.academy.bot.exceptions.IncorrectLinkForDelete;
 import backend.academy.bot.services.CommandRequestService;
@@ -9,12 +8,12 @@ import backend.academy.bot.services.RedisCacheService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import java.util.Map;
 
 @Slf4j
 public final class UntrackCommand extends Command {
@@ -22,12 +21,11 @@ public final class UntrackCommand extends Command {
     private final RedisCacheService redisCacheService;
 
     public UntrackCommand(
-        long chatId, 
-        TelegramBot bot, 
-        CommandRequestService commandRequestService, 
-        String url,
-        RedisCacheService redisCacheService
-    ) {
+            long chatId,
+            TelegramBot bot,
+            CommandRequestService commandRequestService,
+            String url,
+            RedisCacheService redisCacheService) {
         super(commandRequestService, chatId, bot, url);
         this.redisCacheService = redisCacheService;
     }
@@ -49,7 +47,7 @@ public final class UntrackCommand extends Command {
             bot.execute(new SendMessage(chatId, "Удаляю ссылку..."));
             ResponseEntity<TrackLinkResponse> response = commandRequestService.untrackCommandResponse(requestEntity);
             log.info("Response for untrack operation: {}", response);
-            
+
             int responseCode = response.getStatusCode().value();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // Invalidate the cache since we removed a link

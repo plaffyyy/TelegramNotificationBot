@@ -29,12 +29,11 @@ public final class TrackCommand extends Command {
     private final RedisCacheService redisCacheService;
 
     public TrackCommand(
-        long chatId, 
-        TelegramBot bot, 
-        CommandRequestService commandRequestService, 
-        String url,
-        RedisCacheService redisCacheService
-    ) {
+            long chatId,
+            TelegramBot bot,
+            CommandRequestService commandRequestService,
+            String url,
+            RedisCacheService redisCacheService) {
         super(commandRequestService, chatId, bot, url);
         this.redisCacheService = redisCacheService;
     }

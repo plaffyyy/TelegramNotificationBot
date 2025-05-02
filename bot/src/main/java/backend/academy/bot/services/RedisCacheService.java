@@ -1,13 +1,13 @@
 package backend.academy.bot.services;
 
 import backend.academy.bot.model.Link;
+import java.time.Duration;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import java.time.Duration;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -16,6 +16,7 @@ public class RedisCacheService {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private static final String LIST_CACHE_KEY_PREFIX = "bot:list:";
+
     @Value("${bot.cache.list-ttl}")
     private long cacheTtlSeconds; // Не static поле
 

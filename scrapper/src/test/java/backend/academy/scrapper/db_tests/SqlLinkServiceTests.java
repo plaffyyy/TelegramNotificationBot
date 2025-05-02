@@ -3,43 +3,36 @@ package backend.academy.scrapper.db_tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import backend.academy.scrapper.db_tests.*;
 import backend.academy.scrapper.entities.Chat;
 import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.services.data.SqlLinkService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.TestcontainersConfiguration;
-import org.springframework.context.annotation.Import;
 
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
 @Testcontainers
 @Transactional
-@TestPropertySource(properties = {
-    "access-type=SQL" 
-})
+@TestPropertySource(properties = {"access-type=SQL"})
 public class SqlLinkServiceTests {
 
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine")
-        .withDatabaseName("testDb");
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine").withDatabaseName("testDb");
 
     @Autowired
     public SqlLinkServiceTests(SqlLinkService sqlLinkService, JdbcTemplate jdbcTemplate) {
@@ -51,7 +44,6 @@ public class SqlLinkServiceTests {
     private final JdbcTemplate jdbcTemplate;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
 
     @DisplayName("Проверка, что корректно добавляется и удаляется чат")
     @Test

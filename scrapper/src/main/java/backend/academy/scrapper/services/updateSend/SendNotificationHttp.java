@@ -17,7 +17,7 @@ public class SendNotificationHttp implements SendNotification {
     public SendNotificationHttp(@Value("${url.updates}") String botUpdates) {
         this.botUpdates = botUpdates;
     }
-    //TODO: now notification id is a random value, need to change it
+    // TODO: now notification id is a random value, need to change it
     private final RestClient restClient = RestClient.builder().build();
     private final Random random = new Random();
     private final String botUpdates;
@@ -25,12 +25,7 @@ public class SendNotificationHttp implements SendNotification {
     @Override
     public void sendUpdateToBot(Link link, List<Long> ids, String description) {
 
-        LinkUpdateRequest request = new LinkUpdateRequest(
-            random.nextLong(),
-            link.url(),
-            description,
-            ids
-        );
+        LinkUpdateRequest request = new LinkUpdateRequest(random.nextLong(), link.url(), description, ids);
         restClient
                 .post()
                 .uri(botUpdates)

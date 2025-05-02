@@ -41,7 +41,7 @@ public final class CommandHandleTests {
 
         CommandHandler commandHandler = new CommandHandler(mockBot, 111L, line, null, null);
 
-        Command command = commandHandler.getCommandFromUpdate();    
+        Command command = commandHandler.getCommandFromUpdate();
 
         assertEquals(url, command.url());
     }

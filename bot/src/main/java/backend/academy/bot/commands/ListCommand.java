@@ -9,10 +9,10 @@ import backend.academy.bot.services.RedisCacheService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.net.HttpURLConnection;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
-import java.util.Set;
 
 @Slf4j
 public final class ListCommand extends Command {
@@ -20,12 +20,11 @@ public final class ListCommand extends Command {
     private final RedisCacheService redisCacheService;
 
     public ListCommand(
-        long chatId, 
-        TelegramBot bot, 
-        CommandRequestService commandRequestService, 
-        String tag,
-        RedisCacheService redisCacheService
-    ) {
+            long chatId,
+            TelegramBot bot,
+            CommandRequestService commandRequestService,
+            String tag,
+            RedisCacheService redisCacheService) {
         super(commandRequestService, chatId, bot, tag);
         this.redisCacheService = redisCacheService;
     }
@@ -34,7 +33,7 @@ public final class ListCommand extends Command {
     public void execute() {
         try {
             bot.execute(new SendMessage(chatId, FileWithTextResponses.listWords));
-            //url is a tag
+            // url is a tag
             Set<Link> cachedLinks = redisCacheService.getCachedList(chatId);
             if (cachedLinks != null) {
                 log.info("Using cached list for chatId: {}", chatId);
@@ -43,8 +42,7 @@ public final class ListCommand extends Command {
             }
 
             ResponseEntity<LinkResponse> response = commandRequestService.listCommandResponse(chatId, url);
-            // log.info("Response for list operation: {}", response);
-            
+
             int responseCode = response.getStatusCode().value();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 LinkResponse linkResponse = response.getBody();
@@ -52,10 +50,10 @@ public final class ListCommand extends Command {
                     bot.execute(new SendMessage(chatId, "Нет отслеживаемых ссылок."));
                     return;
                 }
-                
+
                 // Cache the successful response
                 redisCacheService.cacheListResult(chatId, linkResponse.links());
-                
+
                 handleLinksResponse(linkResponse);
             } else {
                 bot.execute(new SendMessage(chatId, FileWithTextResponses.errorList));
@@ -66,7 +64,7 @@ public final class ListCommand extends Command {
     }
 
     private void handleLinksResponse(LinkResponse linkResponse) {
-        linkResponse.links().forEach(link -> log.info(link.url()));
+        linkResponse.links().forEach(link -> log.info("Link url: {}", link.url()));
         bot.execute(new SendMessage(chatId, formatingLinks(linkResponse)));
     }
 

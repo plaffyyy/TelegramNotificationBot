@@ -1,10 +1,10 @@
 package backend.academy.bot.notifier.config;
 
+import jakarta.annotation.PostConstruct;
+import java.time.LocalTime;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import jakarta.annotation.PostConstruct;
-import java.time.LocalTime;
 
 @Getter
 @Configuration
@@ -28,10 +28,6 @@ public class NotificationConfig {
     }
 
     public String getDigestCronTime() {
-        return String.format("0 %d %d * * ?",
-            digestLocalTime.getMinute(),
-            digestLocalTime.getHour()
-        );
+        return String.format("0 %d %d * * ?", digestLocalTime.getMinute(), digestLocalTime.getHour());
     }
-
 }

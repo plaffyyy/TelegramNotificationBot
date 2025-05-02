@@ -1,10 +1,10 @@
 package backend.academy.scrapper.services.updateParser;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.beans.factory.annotation.Value;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Value;
 
 public abstract sealed class UpdateParser permits GitHubUpdateParser, StackOverflowUpdateParser {
 
