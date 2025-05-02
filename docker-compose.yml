@@ -145,7 +145,8 @@ services:
   bot:
     env_file:
       - .env
-
+    environment:
+      - TZ=Europe/Moscow
     build:
       context: .
       dockerfile: bot/Dockerfile
