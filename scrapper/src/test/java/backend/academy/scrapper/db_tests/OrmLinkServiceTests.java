@@ -3,7 +3,6 @@ package backend.academy.scrapper.db_tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import backend.academy.scrapper.database_config.DbConfigTest;
 import backend.academy.scrapper.entities.Chat;
 import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.services.data.OrmLinkService;
@@ -12,17 +11,29 @@ import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
-@TestPropertySource(properties = {"spring.test.database.replace=none"})
-public class OrmLinkServiceTests extends DbConfigTest {
+@SpringBootTest
+@Import(TestcontainersConfiguration.class)
+@Testcontainers
+@Transactional // для того чтобы тесты не влияли друг на друга(роллбекаю тесты)
+@TestPropertySource(properties = {"access-type=ORM"})
+public class OrmLinkServiceTests {
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine").withDatabaseName("testDb");
 
     @Autowired
-    public OrmLinkServiceTests(OrmLinkService ormLinkService) {
-        this.ormLinkService = ormLinkService;
-    }
-
-    private final OrmLinkService ormLinkService;
+    private OrmLinkService ormLinkService;
 
     @DisplayName("Проверка, что корректно добавляется и удаляется чат")
     @Test

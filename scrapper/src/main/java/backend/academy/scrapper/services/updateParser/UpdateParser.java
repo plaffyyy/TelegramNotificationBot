@@ -4,9 +4,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Value;
 
 public abstract sealed class UpdateParser permits GitHubUpdateParser, StackOverflowUpdateParser {
 
+    @Value("${user}")
+    protected String user;
     /**
      * Парсит ответ от API и возвращает строку с обновлением
      *

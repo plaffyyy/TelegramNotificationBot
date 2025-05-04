@@ -1,7 +1,15 @@
 version: '3.8'
 
 services:
-
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    command: redis-server --appendonly yes
   updates-db:
     image: postgres:14.17
     container_name: updates-db
@@ -14,12 +22,18 @@ services:
       - pg_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   liquibase-migrations:
     container_name: migrations
     image: liquibase/liquibase:4.29
     depends_on:
-      - updates-db
+      updates-db:
+        condition: service_healthy
     env_file:
       - .env
     command:
@@ -32,6 +46,74 @@ services:
       - update
     volumes:
       - ./migrations:/changelog
+    networks:
+      - app-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper_notifier
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - app-network
+    healthcheck:
+      test: echo srvr | nc localhost 2181 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    restart: always
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      # уникальный идентификатор брокера
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # слушатели: первый — для других контейнеров, второй — для хоста
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      # как клиентам обращаться к брокеру
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      # Retention configurations
+      KAFKA_LOG_RETENTION_HOURS: "24"           # Keep messages for 24 hours
+      KAFKA_LOG_RETENTION_BYTES: "1073741824"   # Keep up to 1GB of messages
+      KAFKA_LOG_SEGMENT_BYTES: "536870912"      # Each segment can be up to 512MB
+      KAFKA_LOG_CLEANUP_POLICY: "delete"        # Delete old messages (alternative is "compact")
+    ports:
+      - "29092:29092"   # для контейнеров (scrapper, bot)
+      - "9092:9092"     # для локального компьютера
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - app-network
+    healthcheck:
+      test: kafka-topics --bootstrap-server kafka:29092 --list || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:latest
+    container_name: redpanda-console
+    restart: always
+    ports:
+      - "8084:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - KAFKA_BROKERS=kafka:29092
     networks:
       - app-network
 
@@ -49,7 +131,12 @@ services:
       context: .
       dockerfile: scrapper/Dockerfile
     depends_on:
-      - updates-db
+      redis:
+        condition: service_started
+      updates-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     ports:
       - 8082:8082
     networks:
@@ -58,13 +145,20 @@ services:
   bot:
     env_file:
       - .env
-
+    environment:
+      - TZ=Europe/Moscow
     build:
       context: .
       dockerfile: bot/Dockerfile
     depends_on:
-      - updates-db
-      - scrapper
+      updates-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      scrapper:
+        condition: service_started
+      redis:
+        condition: service_started
 
     networks:
       - app-network
@@ -76,3 +170,5 @@ networks:
 
 volumes:
   pg_data:
+  kafka_data:
+  redis_data:

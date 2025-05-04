@@ -7,6 +7,7 @@ import backend.academy.bot.commands.TrackCommand;
 import backend.academy.bot.commands.UntrackCommand;
 import backend.academy.bot.exceptions.NotFoundCommandException;
 import backend.academy.bot.services.CommandRequestService;
+import backend.academy.bot.services.RedisCacheService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class CommandHandler {
     private final long chatId;
     private final String textMessage;
     private final CommandRequestService commandRequestService;
+    private final RedisCacheService redisCacheService;
 
     public Command getCommandFromUpdate() {
 
@@ -32,18 +34,18 @@ public class CommandHandler {
                     if (url.isEmpty()) {
                         throw new NotFoundCommandException("Введите ссылку в команде");
                     }
-                    yield new TrackCommand(chatId, bot, commandRequestService, url);
+                    yield new TrackCommand(chatId, bot, commandRequestService, url, redisCacheService);
                 }
                 case "/untrack" -> {
                     String url = messageLink.length == 2 ? messageLink[1] : "";
                     if (url.isEmpty()) {
                         throw new NotFoundCommandException("Введите ссылку в команде");
                     }
-                    yield new UntrackCommand(chatId, bot, commandRequestService, url);
+                    yield new UntrackCommand(chatId, bot, commandRequestService, url, redisCacheService);
                 }
                 case "/list" -> {
                     String tag = messageLink.length == 2 ? messageLink[1] : "";
-                    yield new ListCommand(chatId, bot, commandRequestService, tag);
+                    yield new ListCommand(chatId, bot, commandRequestService, tag, redisCacheService);
                 }
                 default -> throw new NotFoundCommandException("У бота нет такой команды");
             };
