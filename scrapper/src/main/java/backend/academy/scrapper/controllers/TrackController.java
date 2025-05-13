@@ -76,43 +76,57 @@ public final class TrackController {
     }
 
     @PostMapping
-    public ResponseEntity<TrackLinkResponse> trackLink(
+    @RateLimiter(name = "apiRateLimiter")
+    @TimeLimiter(name = "httpTimeout")
+    @Retry(name = "httpRetry")
+    @CircuitBreaker(name = "httpCB")
+    public Mono<ResponseEntity<TrackLinkResponse>> trackLink(
             @RequestHeader("Tg-Chat-Id") String chatId, @RequestBody Map<String, Object> request) {
-        log.info("Just log for check that controller get this");
 
-        String url = String.valueOf(request.get("url"));
-        long chatID = Long.parseLong(chatId);
+        return Mono.fromCallable(() -> {
+            log.info("Just log for check that controller get this");
 
-        List<String> tags = (List<String>) request.getOrDefault("tags", List.of());
-        List<String> filters = (List<String>) request.getOrDefault("filters", List.of());
+            String url = String.valueOf(request.get("url"));
+            long chatID = Long.parseLong(chatId);
 
-        Link link = new Link(url, tags, filters);
+            List<String> tags = (List<String>) request.getOrDefault("tags", List.of());
+            List<String> filters = (List<String>) request.getOrDefault("filters", List.of());
 
-        linkService.addLink(chatID, link);
-        log.info("links by id {}", linkService.getLinksByChatId(chatID).toString());
+            Link link = new Link(url, tags, filters);
 
-        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatID, url, tags, filters);
-        log.info("TrackLinkResponse url: {}", trackLinkResponse.url());
-        return ResponseEntity.ok(trackLinkResponse);
+            linkService.addLink(chatID, link);
+            log.info("links by id {}", linkService.getLinksByChatId(chatID).toString());
+
+            TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatID, url, tags, filters);
+            log.info("TrackLinkResponse url: {}", trackLinkResponse.url());
+            return ResponseEntity.ok(trackLinkResponse);
+        });
+
     }
 
     @DeleteMapping
-    public ResponseEntity<TrackLinkResponse> deleteLink(
+    @RateLimiter(name = "apiRateLimiter")
+    @TimeLimiter(name = "httpTimeout")
+    @Retry(name = "httpRetry")
+    @CircuitBreaker(name = "httpCB")
+    public Mono<ResponseEntity<TrackLinkResponse>> deleteLink(
             @RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
-        long chatId = Long.parseLong(id);
-        String url = String.valueOf(request.get("url"));
-        try {
-            Link link = linkService.removeLinkByUrl(chatId, url);
-            if (link == null) {
-                throw new LinkNotFoundException("Ссылка " + url + " не найдена");
-            }
+        return Mono.fromCallable(() -> {
+            long chatId = Long.parseLong(id);
+            String url = String.valueOf(request.get("url"));
+            try {
+                Link link = linkService.removeLinkByUrl(chatId, url);
+                if (link == null) {
+                    throw new LinkNotFoundException("Ссылка " + url + " не найдена");
+                }
 
-            TrackLinkResponse trackLinkResponse =
+                TrackLinkResponse trackLinkResponse =
                     new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
 
-            return ResponseEntity.ok(trackLinkResponse);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
+                return ResponseEntity.ok(trackLinkResponse);
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body(null);
+            }
+        });
     }
 }
