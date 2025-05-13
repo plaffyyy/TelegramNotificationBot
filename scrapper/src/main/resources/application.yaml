@@ -5,6 +5,35 @@ app:
     access-token: ${SO_ACCESS_TOKEN}
 
 
+resilience4j:
+  retry:
+    instances:
+      httpRetry:
+        max-attempts: 3
+        wait-duration: 1s
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+
+  circuitbreaker:
+    instances:
+      httpCB:
+        sliding-window-size: 1
+        minimum-number-of-calls: 1
+        failure-rate-threshold: 100
+        permitted-number-of-calls-in-half-open-state: 1
+        wait-duration-in-open-state: 1s
+
+  timelimiter:
+    instances:
+      httpTimeout:
+        timeout-duration: 2s
+
+  ratelimiter:
+    instances:
+      apiRateLimit:
+        limit-for-period: 15
+        limit-refresh-period: 1m #не более 15 вызовов в минуту
+
 url:
   updates: "http://bot:8082/updates"
 spring:

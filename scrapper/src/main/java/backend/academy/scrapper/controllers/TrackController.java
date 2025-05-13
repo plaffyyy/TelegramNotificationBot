@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @AllArgsConstructor
@@ -33,30 +38,41 @@ public final class TrackController {
 
     /**
      * Получение всех ссылок из базы данных их преобразование в объекты Link из папки model
+     * Использование аннотаций - это паттерн декоратор, работает по следующему принципу:
+     * Mono ← CircuitBreaker ← Retry ← TimeLimiter ← RateLimiter ← Mono.fromCallable()
+     *
      *
      * @return все ссылки
      */
     @ResponseBody
     @GetMapping
-    public ResponseEntity<LinkResponse> getLinks(
+    @RateLimiter(name = "apiRateLimiter")
+    @TimeLimiter(name = "httpTimeout")
+    @Retry(name = "httpRetry")
+    @CircuitBreaker(name = "httpCB")
+    public Mono<ResponseEntity<LinkResponse>> getLinks(
             @RequestHeader("Tg-Chat-Id") String id, @RequestHeader("tag") String tag) {
-        long chatId = Long.parseLong(id);
-        Set<Link> links;
-        if (tag.isEmpty()) {
-            links = linkService.getLinksByChatId(chatId);
-        } else {
-            links = linkService.getLinksByChatIdAndTag(chatId, tag);
-        }
-        log.info("Links by id in controller {}: {}", chatId, links);
-        Set<LinkDto> linksForResponse = links.stream()
-                .map(link -> new LinkDto(
-                        link.id(), link.url(), link.tags(), link.filters(), link.update(), new ChatDto(chatId)))
-                .collect(Collectors.toSet());
-        log.info("LinksForResponse by id in controller {}: {}", chatId, linksForResponse);
-        LinkResponse linkResponse = new LinkResponse(linksForResponse, links.size());
-        log.info("LinkResponse by id in controller: {}", linkResponse);
 
-        return ResponseEntity.ok(linkResponse);
+        return Mono.fromCallable(() -> {
+            long chatId = Long.parseLong(id);
+            Set<Link> links;
+            if (tag.isEmpty()) {
+                links = linkService.getLinksByChatId(chatId);
+            } else {
+                links = linkService.getLinksByChatIdAndTag(chatId, tag);
+            }
+            log.info("Links by id in controller {}: {}", chatId, links);
+            Set<LinkDto> linksForResponse = links.stream()
+                .map(link -> new LinkDto(
+                    link.id(), link.url(), link.tags(), link.filters(), link.update(), new ChatDto(chatId)))
+                .collect(Collectors.toSet());
+            log.info("LinksForResponse by id in controller {}: {}", chatId, linksForResponse);
+            LinkResponse linkResponse = new LinkResponse(linksForResponse, links.size());
+            log.info("LinkResponse by id in controller: {}", linkResponse);
+
+            return ResponseEntity.ok(linkResponse);
+        });
+
     }
 
     @PostMapping
