@@ -10,6 +10,7 @@ import backend.academy.scrapper.services.data.LinkService;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -32,7 +33,7 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/links")
-public final class TrackController {
+public class TrackController {
 
     private final LinkService linkService;
 
@@ -50,10 +51,10 @@ public final class TrackController {
     @TimeLimiter(name = "httpTimeout")
     @Retry(name = "httpRetry")
     @CircuitBreaker(name = "httpCB")
-    public Mono<ResponseEntity<LinkResponse>> getLinks(
+    public CompletableFuture<ResponseEntity<LinkResponse>> getLinks(
             @RequestHeader("Tg-Chat-Id") String id, @RequestHeader("tag") String tag) {
 
-        return Mono.fromCallable(() -> {
+        return CompletableFuture.supplyAsync(() -> {
             long chatId = Long.parseLong(id);
             Set<Link> links;
             if (tag.isEmpty()) {
@@ -80,10 +81,10 @@ public final class TrackController {
     @TimeLimiter(name = "httpTimeout")
     @Retry(name = "httpRetry")
     @CircuitBreaker(name = "httpCB")
-    public Mono<ResponseEntity<TrackLinkResponse>> trackLink(
+    public CompletableFuture<ResponseEntity<TrackLinkResponse>> trackLink(
             @RequestHeader("Tg-Chat-Id") String chatId, @RequestBody Map<String, Object> request) {
 
-        return Mono.fromCallable(() -> {
+        return CompletableFuture.supplyAsync(() -> {
             log.info("Just log for check that controller get this");
 
             String url = String.valueOf(request.get("url"));
@@ -109,9 +110,9 @@ public final class TrackController {
     @TimeLimiter(name = "httpTimeout")
     @Retry(name = "httpRetry")
     @CircuitBreaker(name = "httpCB")
-    public Mono<ResponseEntity<TrackLinkResponse>> deleteLink(
+    public CompletableFuture<ResponseEntity<TrackLinkResponse>> deleteLink(
             @RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
-        return Mono.fromCallable(() -> {
+        return CompletableFuture.supplyAsync(() -> {
             long chatId = Long.parseLong(id);
             String url = String.valueOf(request.get("url"));
             try {
