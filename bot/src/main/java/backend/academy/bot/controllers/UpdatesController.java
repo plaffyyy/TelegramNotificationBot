@@ -3,6 +3,11 @@ package backend.academy.bot.controllers;
 import backend.academy.bot.notifier.NotificationHandler;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +25,23 @@ public class UpdatesController {
     private final NotificationHandler notificationHandler;
 
     @PostMapping
-    public ResponseEntity<Void> postUpdate(@RequestBody Map<String, Object> request) {
-        List<Long> ids = (List<Long>) request.getOrDefault("tgChatIds", List.of());
-        String url = (String) request.get("url");
-        String description = (String) request.get("description");
+    @RateLimiter(name = "apiRateLimiter")
+    @TimeLimiter(name = "httpTimeout")
+    @Retry(name = "httpRetry", fallbackMethod = "fallbackNotification")
+    @CircuitBreaker(name = "httpCB")
+    public CompletableFuture<ResponseEntity<Void>> postUpdate(@RequestBody Map<String, Object> request) {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Long> ids = (List<Long>) request.getOrDefault("tgChatIds", List.of());
+            String url = (String) request.get("url");
+            String description = (String) request.get("description");
 
-        notificationHandler.handleNotification(url, description, ids);
-        return ResponseEntity.ok(null);
+            notificationHandler.handleNotification(url, description, ids);
+            return ResponseEntity.ok(null);
+        });
     }
+
+    public void fallbackNotification(Map<String, Object> request, Throwable ex) {
+        log.info("Retry is failed");
+    }
+
 }
