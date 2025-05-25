@@ -2,21 +2,18 @@ package backend.academy.scrapper.services.updateSend.kafka;
 
 import backend.academy.scrapper.entities.Link;
 import backend.academy.scrapper.model.LinkUpdateRequest;
-import backend.academy.scrapper.services.updateSend.SendNotification;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "message-transport", havingValue = "Kafka")
-public class SendNotificationKafka implements SendNotification {
+public class SendNotificationKafka {
 
     private final KafkaTemplate<String, LinkUpdateRequest> kafkaTemplate;
     private final Random random = new Random();
@@ -27,7 +24,6 @@ public class SendNotificationKafka implements SendNotification {
     @Value("${spring.kafka.topic.updates}.DLT")
     private String deadLetterTopic;
 
-    @Override
     public void sendUpdateToBot(Link link, List<Long> ids, String description) {
         // добавил id реквеста в виде строки, чтобы в случае совпадения добавлялось в одну партицию
         // потом когда id будет не рандомным числом, а реальным id ссылки, будет работать отлично

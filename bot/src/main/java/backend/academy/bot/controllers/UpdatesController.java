@@ -1,13 +1,13 @@
 package backend.academy.bot.controllers;
 
 import backend.academy.bot.notifier.NotificationHandler;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class UpdatesController {
     @PostMapping
     @RateLimiter(name = "apiRateLimiter")
     @TimeLimiter(name = "httpTimeout")
-    @Retry(name = "httpRetry", fallbackMethod = "fallbackNotification")
+    @Retry(name = "httpRetry")
     @CircuitBreaker(name = "httpCB")
     public CompletableFuture<ResponseEntity<Void>> postUpdate(@RequestBody Map<String, Object> request) {
         return CompletableFuture.supplyAsync(() -> {
@@ -39,9 +39,4 @@ public class UpdatesController {
             return ResponseEntity.ok(null);
         });
     }
-
-    public void fallbackNotification(Map<String, Object> request, Throwable ex) {
-        log.info("Retry is failed");
-    }
-
 }

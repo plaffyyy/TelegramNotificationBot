@@ -28,9 +28,7 @@ public class ChatController {
     @Retry(name = "httpRetry")
     @CircuitBreaker(name = "httpCB")
     public CompletableFuture<Void> register(@PathVariable Long id) {
-        return CompletableFuture.runAsync(() ->
-            linkService.createChatById(id)
-        );
+        return CompletableFuture.runAsync(() -> linkService.createChatById(id));
     }
 
     @DeleteMapping("/{id}")
@@ -39,8 +37,6 @@ public class ChatController {
     @Retry(name = "httpRetry")
     @CircuitBreaker(name = "httpCB")
     public CompletableFuture<Void> delete(@PathVariable Long id) {
-        return CompletableFuture.runAsync(() ->
-            linkService.deleteChatById(id)
-        );
+        return CompletableFuture.runAsync(() -> linkService.deleteChatById(id));
     }
 }

@@ -7,15 +7,15 @@ import backend.academy.scrapper.exceptions.LinkNotFoundException;
 import backend.academy.scrapper.model.ChatDto;
 import backend.academy.scrapper.model.LinkDto;
 import backend.academy.scrapper.services.data.LinkService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
-import io.github.resilience4j.retry.annotation.Retry;
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @Slf4j
 @AllArgsConstructor
@@ -38,10 +37,9 @@ public class TrackController {
     private final LinkService linkService;
 
     /**
-     * Получение всех ссылок из базы данных их преобразование в объекты Link из папки model
-     * Использование аннотаций - это паттерн декоратор, работает по следующему принципу:
-     * Mono ← CircuitBreaker ← Retry ← TimeLimiter ← RateLimiter ← Mono.fromCallable()
-     *
+     * Получение всех ссылок из базы данных их преобразование в объекты Link из папки model Использование аннотаций -
+     * это паттерн декоратор, работает по следующему принципу: Mono ← CircuitBreaker ← Retry ← TimeLimiter ← RateLimiter
+     * ← Mono.fromCallable()
      *
      * @return все ссылки
      */
@@ -64,16 +62,15 @@ public class TrackController {
             }
             log.info("Links by id in controller {}: {}", chatId, links);
             Set<LinkDto> linksForResponse = links.stream()
-                .map(link -> new LinkDto(
-                    link.id(), link.url(), link.tags(), link.filters(), link.update(), new ChatDto(chatId)))
-                .collect(Collectors.toSet());
+                    .map(link -> new LinkDto(
+                            link.id(), link.url(), link.tags(), link.filters(), link.update(), new ChatDto(chatId)))
+                    .collect(Collectors.toSet());
             log.info("LinksForResponse by id in controller {}: {}", chatId, linksForResponse);
             LinkResponse linkResponse = new LinkResponse(linksForResponse, links.size());
             log.info("LinkResponse by id in controller: {}", linkResponse);
 
             return ResponseEntity.ok(linkResponse);
         });
-
     }
 
     @PostMapping
@@ -102,7 +99,6 @@ public class TrackController {
             log.info("TrackLinkResponse url: {}", trackLinkResponse.url());
             return ResponseEntity.ok(trackLinkResponse);
         });
-
     }
 
     @DeleteMapping
@@ -122,7 +118,7 @@ public class TrackController {
                 }
 
                 TrackLinkResponse trackLinkResponse =
-                    new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
+                        new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
 
                 return ResponseEntity.ok(trackLinkResponse);
             } catch (Exception e) {

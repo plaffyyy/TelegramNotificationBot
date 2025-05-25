@@ -67,7 +67,7 @@ server:
 bot:
   notification:
     mode: DAILY_DIGEST  # or IMMEDIATE
-    digest-time: "16:38"  # time of day to send the digest
+    digest-time: "17:55"  # time of day to send the digest
   cache:
     list-ttl: 300  # TTL for /list cache in seconds (5 minutes)
 
