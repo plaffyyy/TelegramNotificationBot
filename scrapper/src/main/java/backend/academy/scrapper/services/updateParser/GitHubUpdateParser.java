@@ -15,23 +15,27 @@ public final class GitHubUpdateParser extends UpdateParser {
         // я беру вариант только с добавлением, поэтому только знак >
         if (newPulls.size() > lastPulls.size()) {
             JsonNode newPull = newPulls.get(0);
-            result.append("Новый пул реквест:\n")
-                    .append("Название: ")
-                    .append(newPull.get("title").asText())
-                    .append("\n")
-                    .append("Пользователь: ")
-                    .append(newPull.get("user").get("login").asText())
-                    .append("\n")
-                    .append("Время создания: ")
-                    .append(newPull.get("created_at").asText())
-                    .append("\n")
-                    .append("Превью описания: ")
-                    .append(newPull.get("body")
-                            .asText()
-                            .substring(
-                                    0,
-                                    Math.min(200, newPull.get("body").asText().length())))
-                    .append("\n");
+            if (!newPull.get("user").get("login").asText().equals(user)) {
+                result.append("Новый пул реквест:\n")
+                        .append("Название: ")
+                        .append(newPull.get("title").asText())
+                        .append("\n")
+                        .append("Пользователь: ")
+                        .append(newPull.get("user").get("login").asText())
+                        .append("\n")
+                        .append("Время создания: ")
+                        .append(newPull.get("created_at").asText())
+                        .append("\n")
+                        .append("Превью описания: ")
+                        .append(newPull.get("body")
+                                .asText()
+                                .substring(
+                                        0,
+                                        Math.min(
+                                                200,
+                                                newPull.get("body").asText().length())))
+                        .append("\n");
+            }
         }
 
         // Check for new issues
@@ -40,23 +44,28 @@ public final class GitHubUpdateParser extends UpdateParser {
         JsonNode lastIssues = lastUpdate.get("issues");
         if (newIssues.size() > lastIssues.size()) {
             JsonNode newIssue = newIssues.get(0);
-            result.append("Новое Issue:\n")
-                    .append("Название: ")
-                    .append(newIssue.get("title").asText())
-                    .append("\n")
-                    .append("Пользователь: ")
-                    .append(newIssue.get("user").get("login").asText())
-                    .append("\n")
-                    .append("Время создания: ")
-                    .append(newIssue.get("created_at").asText())
-                    .append("\n")
-                    .append("Превью описания: ")
-                    .append(newIssue.get("body")
-                            .asText()
-                            .substring(
-                                    0,
-                                    Math.min(200, newIssue.get("body").asText().length())))
-                    .append("\n");
+
+            if (!newIssue.get("user").get("login").asText().equals(user)) {
+                result.append("Новое Issue:\n")
+                        .append("Название: ")
+                        .append(newIssue.get("title").asText())
+                        .append("\n")
+                        .append("Пользователь: ")
+                        .append(newIssue.get("user").get("login").asText())
+                        .append("\n")
+                        .append("Время создания: ")
+                        .append(newIssue.get("created_at").asText())
+                        .append("\n")
+                        .append("Превью описания: ")
+                        .append(newIssue.get("body")
+                                .asText()
+                                .substring(
+                                        0,
+                                        Math.min(
+                                                200,
+                                                newIssue.get("body").asText().length())))
+                        .append("\n");
+            }
         }
 
         return result.toString();

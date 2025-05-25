@@ -7,9 +7,14 @@ import backend.academy.scrapper.exceptions.LinkNotFoundException;
 import backend.academy.scrapper.model.ChatDto;
 import backend.academy.scrapper.model.LinkDto;
 import backend.academy.scrapper.services.data.LinkService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,76 +32,98 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/links")
-public final class TrackController {
+public class TrackController {
 
     private final LinkService linkService;
 
     /**
-     * Получение всех ссылок из базы данных их преобразование в объекты Link из папки model
+     * Получение всех ссылок из базы данных их преобразование в объекты Link из папки model Использование аннотаций -
+     * это паттерн декоратор, работает по следующему принципу: Mono ← CircuitBreaker ← Retry ← TimeLimiter ← RateLimiter
+     * ← Mono.fromCallable()
      *
      * @return все ссылки
      */
     @ResponseBody
     @GetMapping
-    public ResponseEntity<LinkResponse> getLinks(
+    @RateLimiter(name = "apiRateLimiter")
+    @TimeLimiter(name = "httpTimeout")
+    @Retry(name = "httpRetry")
+    @CircuitBreaker(name = "httpCB")
+    public CompletableFuture<ResponseEntity<LinkResponse>> getLinks(
             @RequestHeader("Tg-Chat-Id") String id, @RequestHeader("tag") String tag) {
-        long chatId = Long.parseLong(id);
-        Set<Link> links;
-        if (tag.isEmpty()) {
-            links = linkService.getLinksByChatId(chatId);
-        } else {
-            links = linkService.getLinksByChatIdAndTag(chatId, tag);
-        }
-        log.info("Links by id in controller {}: {}", chatId, links);
-        Set<LinkDto> linksForResponse = links.stream()
-                .map(link -> new LinkDto(
-                        link.id(), link.url(), link.tags(), link.filters(), link.update(), new ChatDto(chatId)))
-                .collect(Collectors.toSet());
-        log.info("LinksForResponse by id in controller {}: {}", chatId, linksForResponse);
-        LinkResponse linkResponse = new LinkResponse(linksForResponse, links.size());
-        log.info("LinkResponse by id in controller: {}", linkResponse);
 
-        return ResponseEntity.ok(linkResponse);
+        return CompletableFuture.supplyAsync(() -> {
+            long chatId = Long.parseLong(id);
+            Set<Link> links;
+            if (tag.isEmpty()) {
+                links = linkService.getLinksByChatId(chatId);
+            } else {
+                links = linkService.getLinksByChatIdAndTag(chatId, tag);
+            }
+            log.info("Links by id in controller {}: {}", chatId, links);
+            Set<LinkDto> linksForResponse = links.stream()
+                    .map(link -> new LinkDto(
+                            link.id(), link.url(), link.tags(), link.filters(), link.update(), new ChatDto(chatId)))
+                    .collect(Collectors.toSet());
+            log.info("LinksForResponse by id in controller {}: {}", chatId, linksForResponse);
+            LinkResponse linkResponse = new LinkResponse(linksForResponse, links.size());
+            log.info("LinkResponse by id in controller: {}", linkResponse);
+
+            return ResponseEntity.ok(linkResponse);
+        });
     }
 
     @PostMapping
-    public ResponseEntity<TrackLinkResponse> trackLink(
+    @RateLimiter(name = "apiRateLimiter")
+    @TimeLimiter(name = "httpTimeout")
+    @Retry(name = "httpRetry")
+    @CircuitBreaker(name = "httpCB")
+    public CompletableFuture<ResponseEntity<TrackLinkResponse>> trackLink(
             @RequestHeader("Tg-Chat-Id") String chatId, @RequestBody Map<String, Object> request) {
-        log.info("Just log for check that controller get this");
 
-        String url = String.valueOf(request.get("url"));
-        long chatID = Long.parseLong(chatId);
+        return CompletableFuture.supplyAsync(() -> {
+            log.info("Just log for check that controller get this");
 
-        List<String> tags = (List<String>) request.getOrDefault("tags", List.of());
-        List<String> filters = (List<String>) request.getOrDefault("filters", List.of());
+            String url = String.valueOf(request.get("url"));
+            long chatID = Long.parseLong(chatId);
 
-        Link link = new Link(url, tags, filters);
+            List<String> tags = (List<String>) request.getOrDefault("tags", List.of());
+            List<String> filters = (List<String>) request.getOrDefault("filters", List.of());
 
-        linkService.addLink(chatID, link);
-        log.info("links by id {}", linkService.getLinksByChatId(chatID).toString());
+            Link link = new Link(url, tags, filters);
 
-        TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatID, url, tags, filters);
-        log.info("TrackLinkResponse url: {}", trackLinkResponse.url());
-        return ResponseEntity.ok(trackLinkResponse);
+            linkService.addLink(chatID, link);
+            log.info("links by id {}", linkService.getLinksByChatId(chatID).toString());
+
+            TrackLinkResponse trackLinkResponse = new TrackLinkResponse(chatID, url, tags, filters);
+            log.info("TrackLinkResponse url: {}", trackLinkResponse.url());
+            return ResponseEntity.ok(trackLinkResponse);
+        });
     }
 
     @DeleteMapping
-    public ResponseEntity<TrackLinkResponse> deleteLink(
+    @RateLimiter(name = "apiRateLimiter")
+    @TimeLimiter(name = "httpTimeout")
+    @Retry(name = "httpRetry")
+    @CircuitBreaker(name = "httpCB")
+    public CompletableFuture<ResponseEntity<TrackLinkResponse>> deleteLink(
             @RequestHeader("Tg-Chat-Id") String id, @RequestBody Map<String, Object> request) {
-        long chatId = Long.parseLong(id);
-        String url = String.valueOf(request.get("url"));
-        try {
-            Link link = linkService.removeLinkByUrl(chatId, url);
-            if (link == null) {
-                throw new LinkNotFoundException("Ссылка " + url + " не найдена");
+        return CompletableFuture.supplyAsync(() -> {
+            long chatId = Long.parseLong(id);
+            String url = String.valueOf(request.get("url"));
+            try {
+                Link link = linkService.removeLinkByUrl(chatId, url);
+                if (link == null) {
+                    throw new LinkNotFoundException("Ссылка " + url + " не найдена");
+                }
+
+                TrackLinkResponse trackLinkResponse =
+                        new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
+
+                return ResponseEntity.ok(trackLinkResponse);
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body(null);
             }
-
-            TrackLinkResponse trackLinkResponse =
-                    new TrackLinkResponse(chatId, link.url(), link.tags(), link.filters());
-
-            return ResponseEntity.ok(trackLinkResponse);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
+        });
     }
 }

@@ -3,6 +3,37 @@ app:
   stackoverflow:
     key: ${SO_TOKEN_KEY}
     access-token: ${SO_ACCESS_TOKEN}
+
+
+resilience4j:
+  retry:
+    instances:
+      httpRetry:
+        max-attempts: 3
+        wait-duration: 1s
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+
+  circuitbreaker:
+    instances:
+      httpCB:
+        sliding-window-size: 1
+        minimum-number-of-calls: 1
+        failure-rate-threshold: 100
+        permitted-number-of-calls-in-half-open-state: 1
+        wait-duration-in-open-state: 1s
+
+  timelimiter:
+    instances:
+      httpTimeout:
+        timeout-duration: 2s
+
+  ratelimiter:
+    instances:
+      apiRateLimit:
+        limit-for-period: 15
+        limit-refresh-period: 1m #не более 15 вызовов в минуту
+
 url:
   updates: "http://bot:8082/updates"
 spring:
@@ -16,19 +47,38 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   liquibase:
-    enabled: false
-#    change-log: classpath:/migrations/changelog/master.xml
+    enabled: true                      # включаем миграции для тестов
+
+    change-log: classpath:/migrations/changelog/master.xml
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
 
+  kafka:
+    topic:
+      updates: "notifications"
+    bootstrap-servers: kafka:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        acks: 1
+        spring:
+          json:
+            add:
+              type:
+                headers: false
+
 server:
   port: 8082
 
+user:
+  plaffyyy1
 access-type:
   ORM
-
+message-transport:
+  Kafka #{Kafka, HTTP} for update transport
 springdoc:
   swagger-ui:
     enabled: true
